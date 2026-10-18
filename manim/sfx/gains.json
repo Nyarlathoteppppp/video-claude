@@ -1,0 +1,18 @@
+{
+ "stone": -14.0,
+ "stone_big": -8.9,
+ "tick": -17.9,
+ "pop": -25.6,
+ "card": -14.6,
+ "shuffle": -9.9,
+ "rain": -19.7,
+ "whoosh": -17.2,
+ "whoosh_soft": -22.2,
+ "chime": -13.8,
+ "success": -11.8,
+ "question": -19.7,
+ "boom": -10.1,
+ "riser": -17.5,
+ "dice": -8.9,
+ "ambient": -32.5
+}

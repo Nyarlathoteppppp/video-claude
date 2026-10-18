@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AlphaGo Cover 16x9</title>
+<style>
+  /* Stone position in the source frame (px) and where it should land on the cover. Swap these with a new frame. */
+  :root {
+    --src: url("../frames/h_teaser_tree_4k.png");   /* 3840x2160, drawn at 1920x1080 */
+    --stone-x: 691.2px; --stone-y: 561.6px;   /* in the frame, at 1920x1080 scale */
+    --land-x: 660px;   --land-y: 600px;    /* on the cover */
+    --bg: #14161b; --text: #f2efe8; --dim: #9aa0aa; --teal: #5CD0B3; --red: #FC6255; --orange: #FF862F;
+  }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: var(--bg); overflow: hidden; }
+  .stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  .frame, .bloom {
+    position: absolute; width: 1920px; height: 1080px;
+    left: calc(var(--land-x) - var(--stone-x)); top: calc(var(--land-y) - var(--stone-y));
+    background: var(--src) no-repeat; background-size: 1920px 1080px;
+    transform-origin: var(--stone-x) var(--stone-y); transform: scale(1.12);
+  }
+  /* soft bloom: a blurred, brightened copy added on top */
+  .bloom { filter: blur(14px) brightness(1.7) saturate(1.4); mix-blend-mode: screen; opacity: .28; }
+  .glow {   /* extra warm halo on the stone */
+    position: absolute; left: calc(var(--land-x) - 210px); top: calc(var(--land-y) - 210px);
+    width: 420px; height: 420px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,134,47,.42) 0%, rgba(255,134,47,.16) 38%, rgba(255,134,47,0) 70%);
+    mix-blend-mode: screen;
+  }
+  /* vignette + right text panel: one smooth gradient, no hard edges */
+  .shade {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 75% at 36% 55%, rgba(20,22,27,0) 45%, rgba(20,22,27,.75) 100%),
+      linear-gradient(90deg, rgba(20,22,27,0) 36%, rgba(20,22,27,.85) 52%, rgba(20,22,27,.98) 62%);
+  }
+  .grain { position: absolute; inset: 0; opacity: .05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  .qmark {
+    position: absolute; left: calc(var(--land-x) - 150px); top: calc(var(--land-y) - 210px);
+    font: 600 120px/1 "PingFang SC", sans-serif; color: var(--red);
+    text-shadow: 0 0 24px rgba(252,98,85,.55);
+  }
+  .text { position: absolute; left: 1110px; top: 250px; width: 760px; font-family: "PingFang SC", sans-serif; }
+  .tag { font-size: 38px; font-weight: 500; color: var(--dim); letter-spacing: 3px; }
+  .tag b { color: var(--orange); font-weight: 600; }
+  .hero { margin-top: 26px; font-size: 172px; line-height: 1.08; font-weight: 600; color: var(--text); letter-spacing: 2px;
+    text-shadow: 0 6px 30px rgba(0,0,0,.55); }
+  .hero .q { color: var(--red); }
+  .sub { margin-top: 40px; font-size: 52px; font-weight: 500; color: var(--teal); letter-spacing: 2px; }
+  .rule { width: 120px; height: 6px; border-radius: 3px; background: var(--teal); margin-top: 36px; opacity: .9; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="frame"></div>
+  <div class="bloom"></div>
+  <div class="shade"></div>
+  <div class="grain"></div>
+  <div class="text">
+    <div class="tag">AlphaGo vs 李世石 · <b>第37手</b></div>
+    <div class="hero">这是<br>失误吗<span class="q">？</span></div>
+    <div class="rule"></div>
+    <div class="sub">它的脑子里，在长一棵树</div>
+  </div>
+</div>
+</body>
+</html>

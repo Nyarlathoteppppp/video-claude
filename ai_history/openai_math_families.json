@@ -1,0 +1,1493 @@
+{
+"source": "github.com/openai/math CONTENTS.md (Apache-2.0), fetched 2026-10-18; family titles as published",
+"families": [
+[
+"001",
+"Milne’s rationality conjecture and algebraic specialization"
+],
+[
+"002",
+"The full BSD formula from low Selmer corank"
+],
+[
+"003",
+"The quasi-Riemann hypothesis"
+],
+[
+"004",
+"Hilbert’s tenth problem over ℚ"
+],
+[
+"005",
+"Irrationality of Catalan’s constant"
+],
+[
+"006",
+"Goldfeld’s conjecture: densities and mean analytic rank"
+],
+[
+"007",
+"Ordinary two-point correlations and the corrected Elliott conjecture"
+],
+[
+"008",
+"The Deligne–Drinfeld conjecture"
+],
+[
+"009",
+"Function-field reconstruction from Milnor K-theory and Galois data"
+],
+[
+"010",
+"Unrestricted pro-modularity at the prime two"
+],
+[
+"011",
+"Prime-factor statistics of p-1"
+],
+[
+"012",
+"Independent largest prime factors of consecutive integers"
+],
+[
+"013",
+"Ostmann’s inverse Goldbach conjecture"
+],
+[
+"014",
+"Restricted geometric Langlands, global Arthur enhancements, and generic Ramanujan"
+],
+[
+"015",
+"Torus-packet equidistribution in prime, quartic, and sextic degrees"
+],
+[
+"016",
+"Zilber–Pink in abelian varieties and the Siegel threefold"
+],
+[
+"017",
+"The irrationality exponent of π is 2"
+],
+[
+"018",
+"The Margulis–Platonov conjecture over global fields"
+],
+[
+"019",
+"The local p-adic section conjecture and global consequences"
+],
+[
+"020",
+"Squarefree quartics and power-free polynomial values"
+],
+[
+"021",
+"A quadratic bound for Jacobsthal’s function"
+],
+[
+"022",
+"The weak inhomogeneous Duffin–Schaeffer conjecture"
+],
+[
+"023",
+"Patterson's first moment for cubic Gauss sums"
+],
+[
+"024",
+"An asymptotic formula for the number of totients"
+],
+[
+"025",
+"Short Egyptian fractions"
+],
+[
+"026",
+"Positive lower density of large prime gaps"
+],
+[
+"027",
+"Potential integral density on curve character varieties"
+],
+[
+"028",
+"Uniformly bounded components of Gaussian-prime graphs"
+],
+[
+"029",
+"Primitive roots for every admissible integer base"
+],
+[
+"030",
+"Modularity of elliptic curves over imaginary quadratic fields"
+],
+[
+"031",
+"Uchida’s conjecture for open homomorphisms of Galois groups"
+],
+[
+"032",
+"The rational Hodge conjecture for CM abelian varieties"
+],
+[
+"033",
+"Iitaka subadditivity, variation, and logarithmic additivity"
+],
+[
+"034",
+"Log abundance for compact Kähler spaces under logarithmic Iitaka subadditivity"
+],
+[
+"035",
+"Log-canonical threefold abundance in numerical dimension one"
+],
+[
+"036",
+"Numerical semiampleness and generalized minimal models"
+],
+[
+"037",
+"The ordinary-double-point volume gap"
+],
+[
+"038",
+"Fujita’s freeness conjecture"
+],
+[
+"039",
+"Nagata’s conjecture and maximal Seshadri constants"
+],
+[
+"040",
+"Bloch’s conjecture for complex surfaces"
+],
+[
+"041",
+"Hyperkähler SYZ and projective-space bases"
+],
+[
+"042",
+"Oka classification for minimal compact complex surfaces: Kodaira dimension zero and class VII"
+],
+[
+"043",
+"P = W for fixed-determinant SLn moduli spaces"
+],
+[
+"044",
+"The equivariant cohomological Hikita conjecture"
+],
+[
+"046",
+"Shafarevich counterexamples in dimension two and with large fundamental group"
+],
+[
+"047",
+"Zariski cancellation and affine fibrations over the complex numbers"
+],
+[
+"048",
+"A characteristic-zero counterexample to Lipman–Zariski"
+],
+[
+"049",
+"A stable-coordinate counterexample in four variables"
+],
+[
+"050",
+"A counterexample to Griffiths’ positivity conjecture"
+],
+[
+"051",
+"Kobayashi’s canonical-ampleness conjecture"
+],
+[
+"052",
+"Tangent splittings and product decompositions"
+],
+[
+"053",
+"A counterexample to Pixton completeness in Chow"
+],
+[
+"054",
+"Irrational cubic fourfolds with Hodge-theoretic and categorical K3 associations"
+],
+[
+"055",
+"Gepner symmetry and large-volume stability on threefolds"
+],
+[
+"056",
+"Termination of projective and Kähler fourfold minimal model programs"
+],
+[
+"057",
+"Fundamental groups of special complex varieties and root orbifolds"
+],
+[
+"058",
+"Semialgebraic universal covers and bounded domains"
+],
+[
+"059",
+"Counterexamples to Zariski’s multiplicity conjecture"
+],
+[
+"060",
+"The Global Spherical Shell conjecture"
+],
+[
+"062",
+"Projective contact classification and the LeBrun–Salamon conjecture"
+],
+[
+"063",
+"The generalized Mukai conjecture"
+],
+[
+"064",
+"Topological triviality of μ-constant surface singularities"
+],
+[
+"065",
+"Virasoro constraints for complete intersections and projective-bundle towers"
+],
+[
+"066",
+"Bounded klt complements for Fano contractions"
+],
+[
+"067",
+"The Campana–Peternell conjecture in dimension six"
+],
+[
+"068",
+"Anticanonical nonvanishing in every dimension"
+],
+[
+"069",
+"Global quantum geometric Langlands at irrational level"
+],
+[
+"071",
+"Koebe’s circle-domain conjecture"
+],
+[
+"072",
+"Brennan's conjecture and the integral-means spectrum"
+],
+[
+"073",
+"The Falconer distance conjecture"
+],
+[
+"074",
+"Kakeya in three and four dimensions"
+],
+[
+"075",
+"The Llog L Fourier-convergence conjecture"
+],
+[
+"076",
+"Real ultraflat Littlewood polynomials and unbounded binary merit factors"
+],
+[
+"077",
+"Fourier restriction for positively curved surfaces"
+],
+[
+"078",
+"The three-dimensional Bochner–Riesz conjecture"
+],
+[
+"079",
+"Local smoothing in three dimensions"
+],
+[
+"080",
+"The exact Sobolev endpoint for Schrödinger convergence"
+],
+[
+"081",
+"Riesz transforms and rectifiability in higher codimension"
+],
+[
+"082",
+"Annular variation and dyadic absolute bounds for the triangular Hilbert transform"
+],
+[
+"083",
+"Hilbert transforms along Lipschitz directions"
+],
+[
+"084",
+"The geometric case of the Erdős similarity conjecture"
+],
+[
+"085",
+"Endpoint Sobolev regularity of centered disk averages"
+],
+[
+"086",
+"An L3 bound for the trilinear Hilbert transform"
+],
+[
+"087",
+"The Mahler conjectures, functional inequalities and polar-product symplectic width"
+],
+[
+"088",
+"Sharp projection-body inequalities and a counterexample to simplex maximization"
+],
+[
+"089",
+"Bounded-distortion L1 embeddings of planar and bounded-treewidth graphs"
+],
+[
+"090",
+"Triangular-lattice optimality, long-range Riesz and Coulomb energies, and spherical logarithmic energy"
+],
+[
+"091",
+"Logarithmic and Lp Brunn–Minkowski inequalities and the B-conjecture"
+],
+[
+"092",
+"The optimal order of convex-body covering density"
+],
+[
+"093",
+"Dimension-free logarithmic Sobolev inequality for subgaussian log-concave measures"
+],
+[
+"094",
+"Subpolynomial dimension reduction in Lp"
+],
+[
+"095",
+"Hyperbolicity cones without semidefinite lifts"
+],
+[
+"096",
+"The Gaussian propeller conjecture in every dimension"
+],
+[
+"097",
+"The Euclidean Steinitz–Bergström bound"
+],
+[
+"098",
+"Compact counterexamples to bi-Lipschitz dimension reduction"
+],
+[
+"099",
+"The sharp exponential scale of edit-distance distortion"
+],
+[
+"100",
+"Cylinder coverings below the half-area bound"
+],
+[
+"101",
+"The sharp simplex conjecture for isotropic constants"
+],
+[
+"102",
+"The Unique Games Conjecture and optimal approximation thresholds"
+],
+[
+"103",
+"Exact derandomization of logarithmic space: mathsf L=mathsf{RL}=mathsf{BPL}"
+],
+[
+"104",
+"Quasipolynomial algorithms for mean-payoff, stochastic and parity games"
+],
+[
+"105",
+"Perfect completeness for 2-to-1 games"
+],
+[
+"106",
+"Hardness of coloring three-colorable graphs"
+],
+[
+"107",
+"Matrix multiplication with exponent at most 9/4"
+],
+[
+"108",
+"A cubic permanent–determinant lower bound"
+],
+[
+"109",
+"Integer multiplication below nlog n"
+],
+[
+"110",
+"Optimal-order randomized k-server on arbitrary metrics"
+],
+[
+"111",
+"One-sample matroid prophet inequalities against an almighty adversary"
+],
+[
+"112",
+"Beyond the square-root exponent for depth-three circuits"
+],
+[
+"113",
+"Approximate counting and entropy of perfect matchings"
+],
+[
+"114",
+"Approximate counting of common integer polymatroid bases"
+],
+[
+"115",
+"Sampling and counting contingency tables with arbitrary margins"
+],
+[
+"116",
+"Uniform black-box noncommutative identity testing across characteristics"
+],
+[
+"117",
+"Uniform sparsest cut: hardness and semidefinite gaps"
+],
+[
+"118",
+"Bin packing and unbounded configuration-LP gaps"
+],
+[
+"119",
+"The Courtade–Kumar and Hellinger conjectures"
+],
+[
+"120",
+"Almost-linear-time exact matching and prescribed-degree factors in general graphs"
+],
+[
+"121",
+"Almost-linear approximation of edit distance"
+],
+[
+"122",
+"Quantitative trace-reconstruction bounds with a uniform decoder"
+],
+[
+"124",
+"Polynomial-time scheduling on three identical machines"
+],
+[
+"125",
+"The metric k-median approximation threshold and recovery"
+],
+[
+"126",
+"Exponential semidefinite complexity of perfect matching"
+],
+[
+"127",
+"Average sensitivity of polynomial threshold functions"
+],
+[
+"128",
+"A factor-two approximation for shortest common superstring"
+],
+[
+"129",
+"Exponential state costs for two-way automata"
+],
+[
+"130",
+"Exact Fourier transforms below nlog n"
+],
+[
+"131",
+"Rapid mixing of graph switches for every degree sequence"
+],
+[
+"132",
+"A superquadratic separation of sensitivity and block sensitivity"
+],
+[
+"133",
+"The computational complexity of Weisfeiler–Leman refinement"
+],
+[
+"134",
+"Generalized star height at most three"
+],
+[
+"135",
+"Homogeneous depth-five lower bounds for iterated matrix multiplication"
+],
+[
+"136",
+"A quasilinear PCP theorem for PPAD"
+],
+[
+"137",
+"One-tape time simulation in two-fifths-power space"
+],
+[
+"138",
+"Subset Sum in O(2^{0.49n}) time"
+],
+[
+"139",
+"Subpolynomial query complexity for log-concave sampling"
+],
+[
+"140",
+"Memory–sample lower bounds for noiseless Gaussian regression"
+],
+[
+"141",
+"Existential–universal real sentences in the counting hierarchy"
+],
+[
+"142",
+"Deterministic polynomial factorization over prime fields"
+],
+[
+"143",
+"Hilbert's sixteenth problem: uniform bounds for limit cycles"
+],
+[
+"144",
+"Banach’s simple Lebesgue-spectrum problem"
+],
+[
+"145",
+"Rokhlin’s multiple-mixing problem"
+],
+[
+"146",
+"Positive metric entropy for the standard map"
+],
+[
+"147",
+"The near-boundary Birkhoff conjecture"
+],
+[
+"148",
+"The entropy-rate dimension formula for self-similar measures"
+],
+[
+"149",
+"Classwise permanence for weakly reversible mass-action systems"
+],
+[
+"150",
+"Weak mixing of triangular billiards with an irrational angle"
+],
+[
+"151",
+"A C1 counterexample to the entropy conjecture"
+],
+[
+"152",
+"Zero entropy does not guarantee a smooth positive-volume model"
+],
+[
+"153",
+"Arithmetic classification and non-Pisot singularity for Bernoulli convolutions"
+],
+[
+"154",
+"Pointwise multiple ergodic averages for mixing transformations"
+],
+[
+"155",
+"A counterexample to periodic tiling in dimension three"
+],
+[
+"156",
+"Borsuk's conjecture fails in dimension nine"
+],
+[
+"157",
+"Graph coloring, clique minors, and Colin de Verdière invariants"
+],
+[
+"158",
+"The Euclidean plane cannot be colored with five colors"
+],
+[
+"159",
+"Erdős’s reciprocal-sum conjecture and quasipolynomial Szemerédi bounds"
+],
+[
+"160",
+"Superexponential van der Waerden numbers"
+],
+[
+"161",
+"Counterexamples to Sidorenko’s conjecture and the forcing conjecture"
+],
+[
+"162",
+"Counterexamples to Ryser’s covering conjecture"
+],
+[
+"164",
+"Hindman’s finite sums and products conjecture"
+],
+[
+"165",
+"The Harary–Hill and Zarankiewicz crossing-number formulas"
+],
+[
+"166",
+"The higher-dimensional Erdős distinct-distances conjecture"
+],
+[
+"167",
+"Planar distinct distances and unit-distance bounds"
+],
+[
+"168",
+"Combinatorial invariance of Kazhdan–Lusztig polynomials"
+],
+[
+"169",
+"Shareshian–Wachs elementary positivity"
+],
+[
+"170",
+"Sharp logarithmic exponents for off-diagonal Ramsey numbers"
+],
+[
+"171",
+"The hypercube Ramsey conjecture"
+],
+[
+"172",
+"Classification of finite Euclidean Ramsey configurations"
+],
+[
+"173",
+"Seymour’s second-neighborhood conjecture"
+],
+[
+"174",
+"Deterministic construction of strong thin spanning trees"
+],
+[
+"175",
+"Talagrand’s expectation thresholds, discrete convexity, and graph decompositions"
+],
+[
+"176",
+"The second Kahn–Kalai conjecture with an edge-count bound"
+],
+[
+"177",
+"Bounded-degree coboundary expanders"
+],
+[
+"178",
+"Deterministic nonbipartite Ramanujan graphs in every fixed degree"
+],
+[
+"179",
+"The circulant Hadamard and Barker-sequence conjectures"
+],
+[
+"180",
+"Barnette’s Hamiltonian-cycle conjecture"
+],
+[
+"181",
+"The Erdős–Gallai cycle-decomposition conjecture"
+],
+[
+"182",
+"Power savings for intersective polynomial differences and prime arguments"
+],
+[
+"183",
+"Power savings for planar halving lines and k-sets"
+],
+[
+"184",
+"Correspondence coloring with a fixed forbidden subgraph"
+],
+[
+"185",
+"Counterexamples to infinite matroid intersection and packing/covering"
+],
+[
+"186",
+"Uniform influence and sharp thresholds for graph and hypergraph properties"
+],
+[
+"187",
+"Snaky in 21 Maker moves"
+],
+[
+"188",
+"The sharp terminal leave in random triangle removal"
+],
+[
+"189",
+"Cycle–clique Ramsey numbers"
+],
+[
+"190",
+"Polynomial removal fails for ordered binary matrices"
+],
+[
+"191",
+"A power improvement in the Heilbronn triangle lower bound"
+],
+[
+"192",
+"Boolean functions violate the square-root degree bound by arbitrary factors"
+],
+[
+"193",
+"Serre’s intersection-multiplicity conjecture"
+],
+[
+"194",
+"Lech’s multiplicity conjecture"
+],
+[
+"195",
+"A counterexample to the small Cohen–Macaulay module conjecture"
+],
+[
+"196",
+"A counterexample to Kaplansky’s zero-divisor conjecture"
+],
+[
+"197",
+"A torsion-free group algebra that is not directly finite"
+],
+[
+"198",
+"A counterexample to finitistic-dimension finiteness"
+],
+[
+"199",
+"Counterexamples to Auslander–Reiten, Tachikawa and related homological conjectures"
+],
+[
+"200",
+"Eisenbud–Green–Harris and lex-plus-powers"
+],
+[
+"201",
+"A counterexample to Kurosh’s division-ring problem"
+],
+[
+"202",
+"The blockwise Alperin weight conjecture"
+],
+[
+"203",
+"Donovan's conjecture over fields and complete mixed-characteristic DVRs"
+],
+[
+"204",
+"Tensor saturation for even spin groups"
+],
+[
+"205",
+"Saxl’s conjecture and universal tensor squares"
+],
+[
+"206",
+"Finite lattice representation and undecidability"
+],
+[
+"207",
+"The ℓ¹-Bass conjecture for all discrete groups"
+],
+[
+"208",
+"Finite symmetric tensor categories and the Verlinde tower"
+],
+[
+"209",
+"Integral counterexamples to Gersten’s conjecture"
+],
+[
+"210",
+"Foulkes' conjecture for sixth powers and quadratic stabilization"
+],
+[
+"211",
+"The geometric phase diagram, diffusion, and spectra of random planar maps"
+],
+[
+"212",
+"Planar first-passage geometry and the absence of bigeodesics"
+],
+[
+"213",
+"Critical percolation on every quasi-transitive graph"
+],
+[
+"214",
+"The Benjamini–Schramm nonuniqueness conjecture"
+],
+[
+"215",
+"Canonical O(3) continuum limit and exact O(4) mass asymptotics"
+],
+[
+"216",
+"Critical and near-critical XY scaling and BKT universality"
+],
+[
+"217",
+"The low-temperature Sherrington–Kirkpatrick fluctuation law"
+],
+[
+"218",
+"Conformal universality for weakly interacting and random-bond Ising models"
+],
+[
+"219",
+"GOE bulk universality for regular graphs with weak Anderson disorder"
+],
+[
+"220",
+"Directional zero–one laws beyond iid environments and iid ballisticity"
+],
+[
+"221",
+"The Mézard–Parisi formula for diluted spin glasses"
+],
+[
+"222",
+"Perceptron free energies and microscopic jamming exponents"
+],
+[
+"223",
+"Random-cluster interfaces: critical, disordered, thermal, and natural-time scaling"
+],
+[
+"224",
+"Critical and quenched near-critical universality for Poisson–Voronoi percolation"
+],
+[
+"225",
+"Gaussian free field limits throughout the balanced six-vertex regime"
+],
+[
+"226",
+"The double-dimer loop ensemble converges to CLE4"
+],
+[
+"227",
+"Critical SK autocorrelation processes and dynamics across the temperature transition"
+],
+[
+"228",
+"Continuum phase transitions for radial pair potentials"
+],
+[
+"229",
+"Exact three- and four-state reconstruction thresholds and four-state tree capacity"
+],
+[
+"230",
+"Exact Hausdorff gauges for SLE"
+],
+[
+"231",
+"The free uniform spanning forest is a factor of IID"
+],
+[
+"232",
+"Gaussian fields and interfaces for triangular-lattice Lipschitz heights"
+],
+[
+"233",
+"The joint critical Ashkin–Teller current limit"
+],
+[
+"234",
+"All-temperature pressure of orthogonally invariant Ising spin glasses"
+],
+[
+"235",
+"Limiting random SAT thresholds, sharp variance and computability"
+],
+[
+"236",
+"The exact factor-of-IID threshold for free Ising spins on trees"
+],
+[
+"237",
+"The three-quarter exponent for honeycomb self-avoiding walk"
+],
+[
+"238",
+"Optimal logarithmic mixing of the Thorp shuffle"
+],
+[
+"239",
+"Sharp singularity rates for symmetric random sign matrices"
+],
+[
+"240",
+"Shelah's eventual categoricity and the prescribed-threshold obstruction"
+],
+[
+"241",
+"Rigidity of the Turing degrees"
+],
+[
+"242",
+"Single-fold Diophantine representations and undecidability under an at-most-one-solution promise"
+],
+[
+"243",
+"Separating choiceless counting from polynomial time and witnessed choice"
+],
+[
+"244",
+"The Partition Principle does not imply Choice"
+],
+[
+"245",
+"Weak normalization implies strong normalization in pure type systems"
+],
+[
+"246",
+"Cannon's conjecture"
+],
+[
+"247",
+"An infinite finitely presented residually finite 2-group and a finitely presented nil algebra"
+],
+[
+"248",
+"Thompson's group F is nonamenable"
+],
+[
+"249",
+"A finitely generated Eilenberg–Ganea counterexample"
+],
+[
+"250",
+"Boone–Higman embeddings with higher finiteness"
+],
+[
+"251",
+"Amenability, unitarizability, and strong Ulam stability"
+],
+[
+"252",
+"A torsion-free hyperbolic group that is neither residually finite nor linear over any field"
+],
+[
+"253",
+"An infinite finitely presented simple amenable group"
+],
+[
+"254",
+"Classifying spaces and geometric obstructions for Artin groups"
+],
+[
+"255",
+"Quasi-isometric recognition of virtually polycyclic groups"
+],
+[
+"256",
+"Nonsingular systems of equations over arbitrary groups"
+],
+[
+"257",
+"A hyperbolic group without a geometric CAT(0) action"
+],
+[
+"258",
+"Gersten’s conjecture and virtual compact specialness of one-relator groups"
+],
+[
+"259",
+"A group without fixed price"
+],
+[
+"260",
+"Spacetime Penrose inequalities: enclosing area, charge, rotation, and anti-de Sitter extensions"
+],
+[
+"261",
+"Localization and delocalization in the Anderson model"
+],
+[
+"262",
+"Sharp finite-matrix Lieb–Thirring inequalities and all equality cases"
+],
+[
+"263",
+"The ionization and generalized ionization conjectures"
+],
+[
+"264",
+"Strong cosmic censorship near two-ended Kerr data"
+],
+[
+"265",
+"Area laws and tensor networks for two-dimensional gapped systems"
+],
+[
+"266",
+"Exactly three mutually unbiased bases in dimension six"
+],
+[
+"267",
+"Positive-temperature Bose–Einstein condensation and exact quantum depletion"
+],
+[
+"268",
+"The spin-one Haldane gap"
+],
+[
+"269",
+"Uniform Laughlin gap and stability under bounded scalar disorder"
+],
+[
+"270",
+"Threshold and positive-energy bound states of the BFSS matrix model"
+],
+[
+"271",
+"Bloch's law, its lattice correction, and the spherical magnetization law"
+],
+[
+"272",
+"Entanglement without distillable secret key"
+],
+[
+"273",
+"The entropy photon-number inequality"
+],
+[
+"274",
+"Parity is not in QAC0"
+],
+[
+"275",
+"QMA-hardness of continuum Coulomb energy"
+],
+[
+"276",
+"Classical capacity of generalized amplitude damping"
+],
+[
+"277",
+"Threshold repetition for entangled games"
+],
+[
+"278",
+"Failure of Kohn–Sham ensemble representation"
+],
+[
+"279",
+"Exact quantum factoring over a fixed finite gate set"
+],
+[
+"280",
+"Unitary vertex operator algebras and conformal nets"
+],
+[
+"281",
+"QAOA attains the SK optimum in the thermodynamic-first limit"
+],
+[
+"282",
+"From scale symmetry to local conformal symmetry in four-dimensional QFT"
+],
+[
+"283",
+"Polynomial-time unitary synthesis from a Boolean oracle"
+],
+[
+"284",
+"The optimal quartic separation between randomized and quantum queries"
+],
+[
+"285",
+"Counterexamples to Baum–Connes and Kadison–Kaplansky"
+],
+[
+"286",
+"Rigidity and arithmetic of lattice von Neumann algebras"
+],
+[
+"287",
+"Isomorphism of the free group factors"
+],
+[
+"288",
+"Kadison's similarity conjecture"
+],
+[
+"289",
+"Strong Kadison–Kastler stability and its spatial boundaries"
+],
+[
+"290",
+"Relative bicentralizers and modular spectral recovery"
+],
+[
+"291",
+"Cuntz comparison, nuclear dimension, and equivariant Jiang–Su stability"
+],
+[
+"292",
+"Kirchberg's mathcal O_2 norm-ultrapower embedding problem"
+],
+[
+"293",
+"Invariant projections, hyperinvariant subspaces, and transitive algebras"
+],
+[
+"294",
+"Kaplansky's quasitrace conjecture and failure of tensor-product stable finiteness"
+],
+[
+"295",
+"The Kadison–Ringrose cohomology conjecture"
+],
+[
+"296",
+"The generator problem for finite factors"
+],
+[
+"297",
+"A ZFC counterexample to Naimark's problem"
+],
+[
+"298",
+"Two notions of free entropy differ even when both are finite"
+],
+[
+"299",
+"The Kirchberg–Rørdam character criterion and infinite tensor-power Jiang–Su stability"
+],
+[
+"300",
+"Approximation and quadratic strong-operator paving"
+],
+[
+"301",
+"Trace cones and Razak–Jacelon stabilization"
+],
+[
+"302",
+"Radius of comparison equals half the mean dimension"
+],
+[
+"303",
+"Weak pure infiniteness and Cuntz-algebra absorption"
+],
+[
+"304",
+"The Hilbert–Smith conjecture in every dimension"
+],
+[
+"305",
+"Four-dimensional disk embedding and Wall's conjecture"
+],
+[
+"306",
+"The purely cosmetic surgery conjecture"
+],
+[
+"307",
+"Failure of rational injectivity for maximal coarse assembly"
+],
+[
+"308",
+"Finite Smith–Toda complexes at every height"
+],
+[
+"309",
+"The Kervaire invariant problem at the prime three"
+],
+[
+"310",
+"Quillen's conjecture in rational homology"
+],
+[
+"311",
+"The Hovey–Strickland and Chai conjectures"
+],
+[
+"312",
+"The Grothendieck homotopy hypothesis"
+],
+[
+"313",
+"Finite generation for the K(n)-local sphere"
+],
+[
+"314",
+"Cyclic length and chromatic fixed-point loss"
+],
+[
+"315",
+"The four-dimensional Singer conjecture"
+],
+[
+"316",
+"Curtis’s conjecture"
+],
+[
+"317",
+"Thomason model structures in all strict higher dimensions"
+],
+[
+"318",
+"Chromatic splitting: filtrations and counterexamples"
+],
+[
+"319",
+"Counterexamples to finite generation at chromatic height two"
+],
+[
+"320",
+"Nonhomeomorphic closed aspherical four-manifolds"
+],
+[
+"321",
+"A counterexample to Wall's finite D(2) problem"
+],
+[
+"322",
+"Tingley’s sphere-isometry problem"
+],
+[
+"323",
+"Independence of the separable quotient problem"
+],
+[
+"324",
+"Lipschitz equivalent Banach spaces need not be linearly isomorphic"
+],
+[
+"325",
+"The complete Crouzeix conjecture"
+],
+[
+"326",
+"The cotype–cotype conjecture under the approximation property"
+],
+[
+"327",
+"Markov type characterizes superreflexivity"
+],
+[
+"328",
+"Nonexpansive fixed points in reflexive Banach spaces"
+],
+[
+"329",
+"A counterexample to metric-entropy duality"
+],
+[
+"330",
+"A uniformly discrete counterexample to bounded approximation in Lipschitz-free spaces"
+],
+[
+"331",
+"Reflexive midpoint convexity and diamond distortion"
+],
+[
+"332",
+"Metric Markov cotype of ℓ1 and Hilbert-space Lipschitz extension"
+],
+[
+"333",
+"Smooth isometric immersions of surfaces into ℝ4"
+],
+[
+"334",
+"A smooth surface metric with no local isometric immersion in ℝ3"
+],
+[
+"335",
+"Gromov’s integral scalar-curvature bound for simplicial volume"
+],
+[
+"336",
+"Spectral scalar curvature, Urysohn width, and macroscopic dimension"
+],
+[
+"337",
+"Sharp Cartan–Hadamard isoperimetry and rigidity"
+],
+[
+"338",
+"Yau's uniformization conjecture"
+],
+[
+"339",
+"Katok's entropy rigidity conjecture"
+],
+[
+"340",
+"A counterexample to the nearby Lagrangian conjecture"
+],
+[
+"341",
+"Donaldson's hypersymplectic deformation conjecture"
+],
+[
+"342",
+"Donaldson's tamed-to-compatible conjecture"
+],
+[
+"343",
+"Symplectic ball packing in higher dimensions"
+],
+[
+"344",
+"The metric Blaschke conjecture"
+],
+[
+"345",
+"Infinitely many closed geodesics on Riemannian spheres and closed three-manifolds"
+],
+[
+"346",
+"Sharp singular-set bounds for stationary integral varifolds"
+],
+[
+"347",
+"Counterexamples to stable-Morse and strong Arnold fixed-point bounds"
+],
+[
+"348",
+"Nonnegative-curvature Einstein classification and an L2 topological gap"
+],
+[
+"349",
+"The Solomon–Yau least-volume conjecture"
+],
+[
+"350",
+"Yau’s nodal bounds: surfaces and higher dimensions"
+],
+[
+"351",
+"Scalar curvature and finite-time Ricci-flow singularities"
+],
+[
+"352",
+"A finite-time singularity of Calabi flow"
+],
+[
+"353",
+"Affine Bernstein rigidity through dimension nine and a smooth dimension-ten counterexample"
+],
+[
+"354",
+"The isoperimetric profile of the cubic three-torus"
+],
+[
+"355",
+"Unique tangent flows at the first surface singularity"
+],
+[
+"356",
+"Gigli’s characterization of Alexandrov curvature"
+],
+[
+"357",
+"Bi-Lipschitz coordinates at every regular RCD point"
+],
+[
+"358",
+"A three-manifold without conjugate points or nonpositive curvature"
+],
+[
+"359",
+"Negative Kähler curvature without bounded holomorphic coordinates"
+],
+[
+"360",
+"Weak MTW curvature gives convexity and regular optimal transport"
+],
+[
+"361",
+"Failure of integer-degree harmonic dimension comparison"
+],
+[
+"362",
+"Global smoothness for relativistic Vlasov–Maxwell"
+],
+[
+"363",
+"Nonuniqueness with local conservation for the hard-sphere Boltzmann equation"
+],
+[
+"364",
+"Kinetic limits and fluctuations over the Boltzmann lifespan"
+],
+[
+"365",
+"Joint metric and connection recovery from one boundary patch"
+],
+[
+"366",
+"The planar Mumford–Shah regularity conjecture and local weak-L4 gradient bounds"
+],
+[
+"367",
+"The critical dimension for the one-phase Bernoulli problem"
+],
+[
+"368",
+"The three-dimensional Ball–Evans approximation problem"
+],
+[
+"369",
+"The hot spots conjecture for simply connected planar domains"
+],
+[
+"370",
+"The Lane–Emden and Hénon–Lane–Emden conjectures"
+],
+[
+"371",
+"Stable blowup for the defocusing Schrödinger equation"
+],
+[
+"372",
+"Global uniqueness in smooth isotropic elasticity"
+],
+[
+"373",
+"Nonattainment of the three-marginal Coulomb Monge problem"
+],
+[
+"374",
+"Sharp one-third stability of Brenier maps"
+],
+[
+"375",
+"De Giorgi's conjecture in dimension eight"
+],
+[
+"376",
+"Universal computation in forced Navier–Stokes flows"
+],
+[
+"377",
+"Interior C^{1,alpha} regularity for infinity-harmonic functions"
+]
+]
+}

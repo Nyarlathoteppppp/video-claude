@@ -1,0 +1,17 @@
+# rendered videos and audio: too large for git, and they carry the copyrighted song
+*.mp4
+*.mov
+*.wav
+*.m4a
+*.mp3
+
+# third-party pictures and the song: their sources are listed instead (ai_history/images/LICENSES.md, images.md)
+ai_history/images/*
+!ai_history/images/LICENSES.md
+ai_history/bgm/
+ai_history/film_out/
+
+# caches
+manim/scenes/media/
+**/__pycache__/
+.DS_Store
