@@ -15,11 +15,12 @@ render_frame(t) on a cairo surface (vectors, text) plus numpy (glow, plates).
 
     PY=python3        # a Python with pycairo, numpy, scipy, Pillow (and ffmpeg on PATH)
     $PY ai_history_film.py snap 3 20 45 70          # PNGs + contact sheet -> ai_history/film_out/snaps/
-    $PY ai_history_film.py render 0 328.0 --jobs 8 --name ai_history_v6   # mp4 with the BGM -> ai_history/film_out/
+    $PY ai_history_film.py render 0 328.0 --jobs 8 --name ai_history_v7   # mp4 with the BGM -> ai_history/film_out/
     $PY ai_history_film.py check                     # data and timeline sanity checks
 
-Inputs: ai_history/milestones.csv (dates, weights; Pi-verified), ai_history/bgm/bgm_v2.wav (the song cycle, original order,
-music dips in the bar before ChatGPT), cjm_mwgq_cycle.beats.csv (downbeats), ai_history/images.
+Inputs: ai_history/milestones.csv (dates, weights; Pi-verified), ai_history/bgm/bgm_v3.wav (the song cycle, original order,
+four quiet bars cut in the first winter) and bgm_v3.beats.csv (every beat, from manim/sfx/analyze_bgm.py), ai_history/images.
+The releases (cold open + film, on the beat) are put together by assemble_v7.sh.
 """
 import argparse
 import csv
@@ -151,13 +152,13 @@ def winter_amount(t):
 # ======================================================================================
 # music (the song in its original order) and the story clock
 # ======================================================================================
-BGM_FILE, BGM_JSON = "bgm_v2.wav", "bgm_v2.json"
+BGM_FILE, BGM_JSON = "bgm_v3.wav", "bgm_v3.json"   # v3: four quiet bars cut in the first winter
 
 
 @lru_cache(None)
 def downbeats():
     cyc = []
-    with open(os.path.join(BGM, "cjm_mwgq_cycle.beats.csv")) as fh:
+    with open(os.path.join(BGM, "bgm_v3.beats.csv")) as fh:
         for r in csv.DictReader(fh):
             if r["beat_in_bar"] == "1":
                 cyc.append(float(r["t"]))
@@ -165,29 +166,46 @@ def downbeats():
 
 
 BAR = 3.866
+BEAT = BAR / 4
+
+
+@lru_cache(None)
+def beat_times():
+    """Every beat of the song (bgm_v3), extended a little past both ends at the bar's pulse."""
+    with open(os.path.join(BGM, "bgm_v3.beats.csv")) as fh:
+        b = np.array([float(r["t"]) for r in csv.DictReader(fh)])
+    cycle = 294.558                                     # bgm_v3 length: the song starts over (the render loops it)
+    return np.concatenate([b[0] - BEAT * np.arange(2, 0, -1), b, b + cycle])
+
+
+def snap(t, half=True):
+    """Nearest beat (half=True: nearest half-beat) — everything that pops lands on the music."""
+    b = beat_times()
+    g = np.sort(np.concatenate([b, (b[:-1] + b[1:]) / 2])) if half else b
+    return float(g[int(np.argmin(np.abs(g - t)))])
 KEYS = [
-    (0.0, 1943.0), (1.37, 1943.95), (3.0, 1944.3), (5.248, 1945.49), (6.9, 1945.8), (9.102, 1950.8), (10.8, 1951.1),
+    (0, 1943.0), (1.37, 1943.95), (3, 1944.3), (5.248, 1945.49), (6.9, 1945.8), (9.102, 1950.8), (10.8, 1951.1),
     (16.834, 1956.6), (18.5, 1956.9), (20.689, 1958.55), (22.4, 1958.9), (28.421, 1966.05), (30.1, 1966.4),
-    (32.276, 1969.05), (34.0, 1969.6), (36.153, 1973.4), (37.9, 1973.7), (43.886, 1975.0), (55.472, 1977.0),
-    (70.914, 1980.0), (74.791, 1980.45),
-    (76.5, 1980.8), (82.524, 1983.5), (86.378, 1986.78), (88.0, 1986.95), (94.11, 1987.2), (105.697, 1990.5),
-    (109.552, 1992.3), (111.2, 1992.6), (117.284, 1995.5),
-    (121.162, 1997.37), (122.8, 1997.55), (125.039, 1997.9), (126.6, 1998.1), (128.894, 1998.9), (130.4, 1999.3),
-    (132.748, 2006.5), (134.3, 2006.8), (136.603, 2009.4), (138.1, 2009.7), (140.481, 2012.75), (142.2, 2012.95),
-    (144.335, 2013.2), (148.213, 2014.45), (149.909, 2014.6), (152.067, 2015.9), (153.709, 2016.0), (159.8, 2016.2),
-    (163.654, 2016.55), (167.52, 2017.08), (169.2, 2017.22), (171.386, 2017.45), (173.109, 2017.6), (175.241, 2017.79),
-    (176.9, 2017.85), (179.119, 2018.82), (182.973, 2019.28), (184.709, 2019.6), (186.84, 2020.41), (188.5, 2020.55),
-    (190.705, 2020.91), (192.409, 2020.96), (194.57, 2021.01), (196.2, 2021.12), (198.438, 2022.6), (200.109, 2022.62),
-    (202.292, 2022.66), (204.0, 2022.7),
-    (210.024, 2022.86), (213.4, 2022.865), (213.879, 2022.915),          # the stop before ChatGPT
-    (215.709, 2022.98), (217.757, 2023.2), (219.4, 2023.45), (220.5, 2023.85), (221.611, 2024.124), (223.3, 2024.2), (225.489, 2024.36),
-    (227.1, 2024.42), (229.343, 2024.56), (231.109, 2024.6), (233.221, 2024.70), (234.909, 2024.73), (237.076, 2024.77),
-    (239.0, 2024.79), (240.94, 2024.806), (242.6, 2024.9), (244.808, 2025.05), (246.509, 2025.1), (248.662, 2025.195),
-    (250.4, 2025.22), (252.54, 2025.25), (254.3, 2025.3), (256.395, 2025.38), (258.0, 2025.42), (260.249, 2025.55),
-    (262.0, 2025.57), (264.127, 2025.595), (267.99, 2025.68), (271.859, 2025.88), (275.7, 2026.079), (279.568, 2026.118),
-    (283.446, 2026.173),
-    (287.3, 2026.265), (288.6, 2026.28), (291.178, 2026.385), (292.309, 2026.40), (295.033, 2026.585), (296.109, 2026.6),
-    (298.887, 2026.69), (300.309, 2026.71), (302.765, 2026.765), (305.309, STORY_END), (330.0, STORY_END + 1e-4),
+    (32.276, 1969.05), (34, 1969.6), (36.153, 1973.4), (37.9, 1973.7), (43.886, 1975.0),
+    (55.472, 1980.0), (59.349, 1980.45),
+    (61.058, 1980.8), (67.082, 1983.5), (70.936, 1986.78), (72.558, 1986.95), (78.668, 1987.2), (90.255, 1990.5),
+    (94.11, 1992.3), (95.758, 1992.6), (101.842, 1995.5),
+    (105.72, 1997.37), (107.358, 1997.55), (109.597, 1997.9), (111.158, 1998.1), (113.452, 1998.9), (114.958, 1999.3),
+    (117.306, 2006.5), (118.858, 2006.8), (121.161, 2009.4), (122.658, 2009.7), (125.039, 2012.75), (126.758, 2012.95),
+    (128.893, 2013.2), (132.771, 2014.45), (134.467, 2014.6), (136.625, 2015.9), (138.267, 2016.0), (144.358, 2016.2),
+    (148.212, 2016.55), (152.078, 2017.08), (153.758, 2017.22), (155.944, 2017.45), (157.667, 2017.6), (159.799, 2017.79),
+    (161.458, 2017.85), (163.677, 2018.82), (167.531, 2019.28), (169.267, 2019.6), (171.398, 2020.41), (173.058, 2020.55),
+    (175.263, 2020.91), (176.967, 2020.96), (179.128, 2021.01), (180.758, 2021.12), (182.996, 2022.6), (184.667, 2022.62),
+    (186.85, 2022.66), (188.558, 2022.7),
+    (194.582, 2022.86), (197.958, 2022.865), (198.437, 2022.915),          # the stop before ChatGPT
+    (200.267, 2022.98), (202.315, 2023.2), (203.958, 2023.45), (205.058, 2023.85), (206.169, 2024.124), (207.858, 2024.2), (210.047, 2024.36),
+    (211.658, 2024.42), (213.901, 2024.56), (215.667, 2024.6), (217.779, 2024.70), (219.467, 2024.73), (221.634, 2024.77),
+    (223.558, 2024.79), (225.498, 2024.806), (227.158, 2024.9), (229.366, 2025.05), (231.067, 2025.1), (233.22, 2025.195),
+    (234.958, 2025.22), (237.098, 2025.25), (238.858, 2025.3), (240.953, 2025.38), (242.558, 2025.42), (244.807, 2025.55),
+    (246.558, 2025.57), (248.685, 2025.595), (252.548, 2025.68), (256.417, 2025.88), (260.258, 2026.079), (264.126, 2026.118),
+    (268.004, 2026.173),
+    (271.858, 2026.265), (273.158, 2026.28), (275.736, 2026.385), (276.867, 2026.40), (279.591, 2026.585), (280.667, 2026.6),
+    (283.445, 2026.69), (284.867, 2026.71), (287.323, 2026.765), (289.867, STORY_END), (314.558, STORY_END + 1e-4),
 ]
 _story = PchipInterpolator([k[0] for k in KEYS], [k[1] for k in KEYS], extrapolate=True)
 
@@ -219,104 +237,109 @@ BEATS = [
       story="报告原话：没有任何发现，兑现了当初许诺的重大影响"),
     B(43.886, 1975.0, "第一次寒冬", "第一次 AI 寒冬 · 1974–1980", "承诺的成果迟迟做不出来，经费被大幅削减", card=True, setback=True,
       story="西蒙曾预言：二十年内，机器能做任何人能做的工作"),
-    B(74.791, 1980.45, "专家系统", "专家系统 · 1980 年代", "把专家经验写成成千上万条「如果……就……」规则", viz="rules", image="symbolics_lisp_chm.jpg", echo=[(1956.6, "达特茅斯会议")],
+    B(59.349, 1980.45, "专家系统", "专家系统 · 1980 年代", "把专家经验写成成千上万条「如果……就……」规则", viz="rules", image="symbolics_lisp_chm.jpg", echo=[(1956.6, "达特茅斯会议")],
       story="DEC 的配置系统，每年净回报估计超过四千万美元"),
-    B(86.378, 1986.78, "反向传播", "反向传播 · 1986", "把误差从后往前一层层传回去修正，多层神经网络终于能训练", viz="backprop", image="backprop_p1.png", echo=[(1958.55, "感知机"), (1969.05, "异或难题")],
+    B(70.936, 1986.78, "反向传播", "反向传播 · 1986", "把误差从后往前一层层传回去修正，多层神经网络终于能训练", viz="backprop", image="backprop_p1.png", echo=[(1958.55, "感知机"), (1969.05, "异或难题"), (1974.62, "Werbos 1974")],
       story="方法有了，可当年的算力和数据都撑不起大网络", fore="这个方法还要等 26 年，等来显卡"),
-    B(94.11, 1987.2, "第二次寒冬", "第二次 AI 寒冬 · 1987–1993", "专家系统又贵又难维护，专用电脑市场崩溃，AI 再次失宠", card=True, setback=True,
+    B(78.668, 1987.2, "第二次寒冬", "第二次 AI 寒冬 · 1987–1993", "专家系统又贵又难维护，专用电脑市场崩溃，AI 再次失宠", card=True, setback=True,
       image="symbolics_lisp_chm.jpg"),
-    B(109.552, 1992.3, "TD-Gammon 自学双陆棋", "TD-Gammon 自学双陆棋 · 1992", "自己和自己反复对弈，下到接近人类高手", viz="selfplay", echo=[(1986.78, "反向传播")],
+    B(94.11, 1992.3, "TD-Gammon 自学双陆棋", "TD-Gammon 自学双陆棋 · 1992", "自己和自己反复对弈，下到接近人类高手", viz="selfplay", echo=[(1986.78, "反向传播")],
       story="从零自学到中级，加上特征后接近顶尖"),
-    B(121.162, 1997.37, "深蓝", "深蓝 · 1997", "IBM 超级计算机，靠海量搜索下棋", viz="tree", image="deep_blue_chm.jpg", first="第一次，电脑战胜国际象棋世界冠军", cat="超越人类",
+    B(105.72, 1997.37, "深蓝", "深蓝 · 1997", "IBM 超级计算机，靠海量搜索下棋", viz="tree", image="deep_blue_chm.jpg", first="第一次，电脑战胜国际象棋世界冠军", cat="超越人类",
       story="六局 3½ 比 2½。卡斯帕罗夫：我失去了斗志", fore="围棋，还要再守 19 年"),
-    B(125.039, 1997.9, "LSTM 长短期记忆网络", "LSTM 长短期记忆网络 · 1997", "给网络加上「记忆格」", viz="lstm", story="后来撑起了语音识别和机器翻译", echo=[(1986.78, "反向传播")]),
-    B(128.894, 1998.9, "卷积网络", "卷积网络 · 1998", "小窗口滑过图片找特征", viz="conv", image="lenet5_fig.png", echo=[(1986.78, "反向传播")], story="已商用，每天读几百万张支票"),
-    B(132.748, 2006.5, "深度学习", "深度学习 · 2006", "多层网络重新被训练起来", viz="layers", image="dl2006_p1.png", story="1969 年被冷落的神经网络，又回来了", echo=[(1969.05, "神经网络遭质疑"), (1986.78, "反向传播")]),
-    B(136.603, 2009.4, "ImageNet 图像数据集", "ImageNet 图像数据集 · 2009", "几百万张标注好的图片", viz="mosaic", image="imagenet_p1.png", story="320 万张图、5247 类：为深度学习的爆发备好了数据"),
-    B(140.481, 2012.75, "AlexNet 深度卷积网络", "AlexNet 深度卷积网络 · 2012", "认图错误率 15.3%，第二名 26.2%", viz="cnn", image="alexnet_p1.png", major=30,
+    B(109.597, 1997.9, "LSTM 长短期记忆网络", "LSTM 长短期记忆网络 · 1997", "给网络加上「记忆格」", viz="lstm", story="后来撑起了语音识别和机器翻译", echo=[(1986.78, "反向传播")]),
+    B(113.452, 1998.9, "卷积网络", "卷积网络 · 1998", "小窗口滑过图片找特征", viz="conv", image="lenet5_fig.png", echo=[(1980.29, "新认知机"), (1986.78, "反向传播"), (1989.92, "LeNet 1989")], story="已商用，每天读几百万张支票"),
+    B(117.306, 2006.5, "深度学习", "深度学习 · 2006", "多层网络重新被训练起来", viz="layers", image="dl2006_p1.png", story="1969 年被冷落的神经网络，又回来了", echo=[(1969.05, "神经网络遭质疑"), (1986.78, "反向传播")]),
+    B(121.161, 2009.4, "ImageNet 图像数据集", "ImageNet 图像数据集 · 2009", "几百万张标注好的图片", viz="mosaic", image="imagenet_p1.png", story="320 万张图、5247 类：为深度学习的爆发备好了数据"),
+    B(125.039, 2012.75, "AlexNet 深度卷积网络", "AlexNet 深度卷积网络 · 2012", "认图错误率 15.3%，第二名 26.2%", viz="cnn", image="alexnet_p1.png", major=30,
       story="1986 年的反向传播，终于等来了显卡算力", echo=[(1969.05, "神经网络遭质疑"), (1986.78, "反向传播"), (1998.9, "卷积网络"), (2009.4, "ImageNet")]),
-    B(148.213, 2014.45, "GAN 生成对抗网络", "GAN 生成对抗网络 · 2014", "一个网络造假，一个网络识假，越练越逼真", viz="gan", image="gan_p1.png|gan_samples.png", echo=[(2012.75, "AlexNet")],
+    B(132.771, 2014.45, "GAN 生成对抗网络", "GAN 生成对抗网络 · 2014", "一个网络造假，一个网络识假，越练越逼真", viz="gan", image="gan_p1.png|gan_samples.png", echo=[(2012.75, "AlexNet")],
       story="论文里的人脸和数字，都是它自己画的", cat="生成"),
-    B(152.067, 2015.9, "ResNet 残差网络", "ResNet 残差网络 · 2015", "网络能叠到 152 层深", viz="resnet", image="resnet_p1.png",
+    B(136.625, 2015.9, "ResNet 残差网络", "ResNet 残差网络 · 2015", "网络能叠到 152 层深", viz="resnet", image="resnet_p1.png",
       story="认图错误率降到 3.57%，人类约 5%", echo=[(1958.55, "感知机"), (2012.75, "AlexNet")]),
-    B(159.8, 2016.2, "AlphaGo", "AlphaGo · 2016", "人类下了两千多年的围棋，它 4:1 赢了李世石", viz="mcts", image="press/alphago_lee_sedol.png", first="第一次，AI 下围棋赢了顶尖棋手", major=45, cat="超越人类", echo=[(1992.3, "TD-Gammon"), (1997.37, "深蓝"), (2012.75, "AlexNet")],
+    B(144.358, 2016.2, "AlphaGo", "AlphaGo · 2016", "人类下了两千多年的围棋，它 4:1 赢了李世石", viz="mcts", image="press/alphago_lee_sedol.png", first="第一次，AI 下围棋赢了顶尖棋手", major=45, cat="超越人类", echo=[(1992.3, "TD-Gammon"), (1997.37, "深蓝"), (2012.75, "AlexNet")],
       story="李世石：只是我输了，不是人类输了"),
-    B(167.52, 2017.08, "Libratus 德州扑克", "Libratus 德州扑克 · 2017.01", "一对一德州扑克，对战四位顶尖职业选手", readout=("12 万手", "20 天对局，AI 赢了"),
+    B(152.078, 2017.08, "Libratus 德州扑克", "Libratus 德州扑克 · 2017.01", "一对一德州扑克，对战四位顶尖职业选手", readout=("12 万手", "20 天对局，AI 赢了"),
       first="第一次，AI 在德州扑克里赢了顶尖职业选手", story="扑克要猜对手的牌、会诈唬，它都学会了", major=15, cat="超越人类"),
-    B(171.386, 2017.45, "Transformer 注意力机制", "Transformer 注意力机制 · 2017", "谷歌提出：每个词都「关注」句子里的其他词；ChatGPT 里的 T 就是它", viz="attention", image="attention_p1.png", first="后来的大模型，几乎都建在它上面",
+    B(155.944, 2017.45, "Transformer 注意力机制", "Transformer 注意力机制 · 2017", "谷歌提出：每个词都「关注」句子里的其他词；ChatGPT 里的 T 就是它", viz="attention", image="attention_p1.png", first="后来的大模型，几乎都建在它上面",
       story="论文标题 Attention Is All You Need\n意思是：注意力就是你所需要的一切", fore="仅仅 5 年后，它撑起了 ChatGPT", major=120, echo=[(1997.9, "LSTM")]),
-    B(175.241, 2017.79, "AlphaGo Zero", "AlphaGo Zero · 2017", "不看人类棋谱，从零开始自己和自己下", viz="elo", image="agz_p1.png",
+    B(159.799, 2017.79, "AlphaGo Zero", "AlphaGo Zero · 2017", "不看人类棋谱，从零开始自己和自己下", viz="elo", image="agz_p1.png",
       story="100 比 0，战胜击败李世石的那一版", major=40, echo=[(1992.3, "TD-Gammon"), (2015.9, "ResNet"), (2016.2, "AlphaGo")]),
-    B(179.119, 2018.82, "BERT 语言理解模型", "BERT 语言理解模型 · 2018", "谷歌：先读海量文本，做「完形填空」", viz="cloze", image="bert_p1.png", echo=[(2017.45, "Transformer")]),
-    B(182.973, 2019.28, "OpenAI Five 电竞", "OpenAI Five 电竞 · 2019.04", "5 个 AI 组队打电竞游戏 Dota 2", readout=("2 : 0", "击败世界冠军战队 OG"), image="openai_five_p1.png", echo=[(1997.9, "LSTM"), (2017.79, "AlphaGo Zero")],
+    B(163.677, 2018.82, "BERT 语言理解模型", "BERT 语言理解模型 · 2018", "谷歌：先读海量文本，做「完形填空」", viz="cloze", image="bert_p1.png", echo=[(2017.45, "Transformer")]),
+    B(167.531, 2019.28, "OpenAI Five 电竞", "OpenAI Five 电竞 · 2019.04", "5 个 AI 组队打电竞游戏 Dota 2", readout=("2 : 0", "击败世界冠军战队 OG"), image="openai_five_p1.png", echo=[(1997.9, "LSTM"), (2017.79, "AlphaGo Zero")],
       first="第一次，AI 在电竞比赛里击败世界冠军", story="训练时自己和自己打了相当于 4.5 万年的游戏", major=20, cat="超越人类"),
-    B(186.84, 2020.41, "GPT-3 大语言模型", "GPT-3 大语言模型 · 2020", "1750 亿个参数，只做一件事：猜下一个词", viz="params", image="gpt3_p1.png",
+    B(171.398, 2020.41, "GPT-3 大语言模型", "GPT-3 大语言模型 · 2020", "1750 亿个参数，只做一件事：猜下一个词", viz="params", image="gpt3_p1.png",
       story="它为两年后的 ChatGPT 打下了基础", major=80, echo=[(2017.45, "Transformer"), (2017.92, "百度 · 规模定律"), (2018.43, "GPT-1"), (2019.12, "GPT-2")]),
-    B(190.705, 2020.91, "AlphaFold 2 蛋白质结构", "AlphaFold 2 · 2020", "从氨基酸序列算出蛋白质的三维结构", viz="protein", image="press/alphafold_structure.jpg", echo=[(2017.45, "Transformer")],
+    B(175.263, 2020.91, "AlphaFold 2 蛋白质结构", "AlphaFold 2 · 2020", "从氨基酸序列算出蛋白质的三维结构", viz="protein", image="press/alphafold_structure.jpg", echo=[(2017.45, "Transformer")],
       story="蛋白质评测创始人：这个问题我们卡了将近五十年", fore="这项工作，后来拿了 2024 年诺贝尔化学奖"),
-    B(194.57, 2021.01, "DALL·E 文字生成图像", "DALL·E 文字生成图像 · 2021", "输入一句话，画出从没存在过的图", card=True, image="press/dalle_radish.jpg", echo=[(2017.45, "Transformer"), (2020.41, "GPT-3")],
+    B(179.128, 2021.01, "DALL·E 文字生成图像", "DALL·E 文字生成图像 · 2021", "输入一句话，画出从没存在过的图", card=True, image="press/dalle_radish.jpg", echo=[(2017.45, "Transformer"), (2020.41, "GPT-3")],
       story="官方示例：一只穿芭蕾舞裙、遛狗的萝卜宝宝", cat="生成"),
-    B(198.438, 2022.6, "Stable Diffusion 开源", "Stable Diffusion 开源 · 2022.08", "从一团噪声开始一步步去噪，还原出图像；模型开源，普通显卡就能跑",
+    B(182.996, 2022.6, "Stable Diffusion 开源", "Stable Diffusion 开源 · 2022.08", "从一团噪声开始一步步去噪，还原出图像；模型开源，普通显卡就能跑",
       viz="diffusion", image="ldm_samples.png", story="2015 年提出的扩散模型，冷门多年后成了主角", major=40, echo=[(2014.45, "GAN"), (2015.2, "扩散模型 · 2015"), (2017.45, "Transformer"), (2021.01, "DALL·E")], cat="生成"),
-    B(202.292, 2022.66, "AI 画作夺冠", "AI 画作夺冠 · 2022.08", "Midjourney 生成的画，拿下美国州博览会美术比赛数字艺术类第一名", card=True,
+    B(186.85, 2022.66, "AI 画作夺冠", "AI 画作夺冠 · 2022.08", "Midjourney 生成的画，拿下美国州博览会美术比赛数字艺术类第一名", card=True,
       image="press/theatre_opera_spatial.jpg", story="两位评委事后说，当时不知道 Midjourney 是 AI", cat="生成"),
-    B(213.879, 2022.915, "ChatGPT", "ChatGPT · 2022.11", "基于 GPT-3.5 的聊天助手；两个月，月活用户估计破亿", readout=("GPT-3.5 上线", "5 天，100 万用户"), image="press/chatgpt_launch_2022.jpg",
+    B(198.437, 2022.915, "ChatGPT", "ChatGPT · 2022.11", "基于 GPT-3.5 的聊天助手；两个月，月活用户估计破亿", readout=("GPT-3.5 上线", "5 天，100 万用户"), image="press/altman_tweet_card.png",
       story="1966 年的 ELIZA 只会套模板；56 年后，AI 真的会聊天了", major=150, cat="对话",
       echo=[(1966.05, "ELIZA"), (2017.45, "Transformer"), (2020.41, "GPT-3")]),
-    B(217.757, 2023.2, "GPT-4", "GPT-4 · 2023.03", "能看懂图片，推理更强", viz="bars:gpt4", image="gpt4_exams.png",
+    B(202.315, 2023.2, "GPT-4", "GPT-4 · 2023.03", "能看懂图片，推理更强", viz="bars:gpt4", image="gpt4_exams.png",
       story="模拟律师资格考试：从后 10% 到前 10%", major=90, cat="大模型", echo=[(2017.45, "Transformer"), (2022.915, "ChatGPT")]),
-    B(221.611, 2024.124, "Sora 视频生成", "Sora 视频生成 · 2024.02", "研究预览：一句话生成最长约一分钟的视频", viz="video",
+    B(206.169, 2024.124, "Sora 视频生成", "Sora 视频生成 · 2024.02", "研究预览：一句话生成最长约一分钟的视频", viz="video",
       story="技术报告的标题：视频生成模型是世界模拟器", lift=40, cat="视频",
       echo=[(2015.2, "扩散模型"), (2017.45, "Transformer"), (2022.965, "DiT"), (2023.24, "吃面 · 2023")]),
-    B(225.489, 2024.36, "GPT-4o", "GPT-4o · 2024.05", "文字、声音、图像，一个模型实时对话", viz="voice", image="gpt4o_card_p1.png",
+    B(210.047, 2024.36, "GPT-4o", "GPT-4o · 2024.05", "文字、声音、图像，一个模型实时对话", viz="voice", image="gpt4o_card_p1.png",
       story="平均 320 毫秒回应，和人与人对话差不多", major=60, cat="语音", echo=[(2016.8, "语音识别"), (2017.45, "Transformer"), (2023.2, "GPT-4")]),
-    B(229.343, 2024.56, "奥数银牌水平", "AlphaProof · 2024.07", "国际数学奥赛，银牌水平", readout=("28/42", "国际数学奥赛 · 银牌水平"),
+    B(213.901, 2024.56, "奥数银牌水平", "AlphaProof · 2024.07", "国际数学奥赛，银牌水平", readout=("28/42", "国际数学奥赛 · 银牌水平"),
       story="差 1 分到金牌线", lift=40, cat="数学", echo=[(2017.79, "AlphaGo Zero"), (2024.04, "AlphaGeometry")]),
-    B(233.221, 2024.70, "o1 推理模型", "o1 推理模型 · 2024.09", "先一步步想，再回答", viz="bars:o1", image="o1_card_p1.png", echo=[(2023.2, "GPT-4")], story="想得越久，答得越准", lift=60, cat="推理"),
-    B(237.076, 2024.77, "诺贝尔奖", "2024 诺贝尔奖", "物理学奖、化学奖都颁给了 AI 相关研究", card=True, image="press/nobel_hinton.jpg|press/nobel_hassabis.jpg",
+    B(217.779, 2024.70, "o1 推理模型", "o1 推理模型 · 2024.09", "先一步步想，再回答", viz="bars:o1", image="o1_card_p1.png", echo=[(2023.2, "GPT-4")], story="想得越久，答得越准", lift=60, cat="推理"),
+    B(221.634, 2024.77, "诺贝尔奖", "2024 诺贝尔奖", "物理学奖、化学奖都颁给了 AI 相关研究", card=True, image="press/nobel_hinton.jpg|press/nobel_hassabis.jpg",
       story="1986 年反向传播论文的作者之一辛顿，38 年后拿了物理学奖",
-      echo=[(1943.95, "神经元模型"), (1986.78, "反向传播"), (2020.91, "AlphaFold 2")], lift=30, cat="科学"),
-    B(240.94, 2024.806, "AI 操作电脑", "AI 操作电脑 · 2024.10", "Claude 能看屏幕、动鼠标、敲键盘，像人一样用电脑", viz="computer", echo=[(2024.47, "Claude 3.5 Sonnet")],
+      echo=[(1943.95, "神经元模型"), (1982.29, "Hopfield 网络"), (1985.17, "玻尔兹曼机"), (1986.78, "反向传播"), (2020.91, "AlphaFold 2")], lift=30, cat="科学"),
+    B(225.498, 2024.806, "AI 操作电脑", "AI 操作电脑 · 2024.10", "Claude 能看屏幕、动鼠标、敲键盘，像人一样用电脑", viz="computer", echo=[(2024.47, "Claude 3.5 Sonnet")],
       story="一个月后，Anthropic 又开源了 MCP：让 AI 接上各种工具", lift=30, cat="智能体"),
-    B(244.808, 2025.05, "DeepSeek-R1", "DeepSeek-R1 · 2025.01", "国产开源推理模型，登顶美国 App Store 免费榜", viz="bars:r1", image="deepseek_r1_p1.png",
+    B(229.366, 2025.05, "DeepSeek-R1", "DeepSeek-R1 · 2025.01", "国产开源推理模型，登顶美国 App Store 免费榜", viz="bars:r1", image="deepseek_r1_p1.png",
       story="一周后，英伟达单日跌 17%，市值蒸发约 5890 亿美元", major=80, cat="开源", echo=[(2017.79, "AlphaGo Zero"), (2024.70, "o1"), (2024.98, "DeepSeek-V3")]),
-    B(248.662, 2025.195, "具身智能", "Gemini Robotics · 2025.03", "机器人听懂一句话就动手，没见过的任务也能做", viz="robot",
+    B(233.22, 2025.195, "具身智能", "Gemini Robotics · 2025.03", "机器人听懂一句话就动手，没见过的任务也能做", viz="robot",
       story="1958 年的报纸就写过：它将来能走、能说、能看", echo=[(1958.55, "感知机"), (2017.45, "Transformer"), (2023.57, "RT-2"), (2024.83, "π0")], lift=40, cat="具身"),
-    B(252.54, 2025.25, "图灵测试被通过", "图灵测试被通过 · 2025.03", "三方对话测试中，GPT-4.5 比真人更像真人", first="第一次，AI 通过了标准的三方图灵测试", major=120,
+    B(237.098, 2025.25, "图灵测试被通过", "图灵测试被通过 · 2025.03", "三方对话测试中，GPT-4.5 比真人更像真人", first="第一次，AI 通过了标准的三方图灵测试", major=120,
       viz="bars:turing", image="turing2025_fig2.png", story="图灵 1950 年提出的测试，75 年后被 AI 通过",
       echo=[(1950.8, "图灵测试"), (1966.05, "ELIZA"), (2022.915, "ChatGPT")], cat="对话"),
-    B(256.395, 2025.38, "AI 视频", "AI 生成视频 · 2025.05", "同一个题目「威尔·史密斯吃面」：两年，从扭曲变成以假乱真", card=True,
+    B(240.953, 2025.38, "AI 视频", "AI 生成视频 · 2025.05", "同一个题目「威尔·史密斯吃面」：两年，从扭曲变成以假乱真", card=True,
       image="press/willsmith_2023_2025.png", story="2025 年的 Veo 3，还能同时生成声音", echo=[(2015.2, "扩散模型"), (2023.24, "吃面 · 2023"), (2024.124, "Sora")], lift=50, cat="视频"),
-    B(260.249, 2025.55, "奥数金牌水平", "国际数学奥赛 · 2025.07", "金牌水平", viz="bars:imo", first="第一次，AI 拿到官方认证的奥数金牌", major=150,
+    B(244.807, 2025.55, "奥数金牌水平", "国际数学奥赛 · 2025.07", "金牌水平", viz="bars:imo", first="第一次，AI 拿到官方认证的奥数金牌", major=150,
       story="一年前还是银牌，差 1 分", echo=[(2024.04, "AlphaGeometry"), (2024.56, "银牌 · 2024"), (2024.70, "o1")], cat="数学"),
-    B(264.127, 2025.595, "世界模型", "Genie 3 世界模型 · 2025.08", "一句话生成一个世界，还能实时走进去、和它互动", viz="world", image="world_models_p1.png",
+    B(248.685, 2025.595, "世界模型", "Genie 3 世界模型 · 2025.08", "一句话生成一个世界，还能实时走进去、和它互动", viz="world", image="world_models_p1.png",
       story="2018 年的论文《World Models》：让 AI 在自己的「梦」里学习", lift=50, cat="世界模型",
       echo=[(2018.24, "World Models"), (2019.88, "MuZero"), (2024.124, "Sora"), (2024.93, "Genie 2")]),
-    B(267.99, 2025.68, "ICPC 编程竞赛全对", "ICPC 编程竞赛 · 2025.09", "世界总决赛：12 道题全部做对", viz="bars:icpc", echo=[(2021.49, "GitHub Copilot"), (2024.70, "o1")], lift=50, cat="超越人类"),
-    B(271.859, 2025.88, "AI 编程智能体", "AI 编程智能体 · 2025", "Claude Code、Codex：自己读代码、改代码、跑测试",
+    B(252.548, 2025.68, "ICPC 编程竞赛全对", "ICPC 编程竞赛 · 2025.09", "世界总决赛：12 道题全部做对", viz="bars:icpc", echo=[(2021.49, "GitHub Copilot"), (2024.70, "o1")], lift=50, cat="超越人类"),
+    B(256.417, 2025.88, "AI 编程智能体", "AI 编程智能体 · 2025", "Claude Code、Codex：自己读代码、改代码、跑测试",
       readout=("90%", "很多团队的代码由 AI 写"), story="Anthropic CEO 2025.10：很多团队如此，但不是每个团队",
       echo=[(1945.49, "冯·诺依曼结构"), (2021.49, "GitHub Copilot"), (2024.806, "AI 操作电脑"), (2025.146, "Claude Code")], lift=80, cat="编程"),
-    B(275.7, 2026.079, "任务长度翻倍", "AI 能独立完成的任务 · 2026.01", "AI 有一半把握完成的任务长度：2019 年起约 7 个月翻一倍，2023 年起约 4 个月",
+    B(260.258, 2026.079, "任务长度翻倍", "AI 能独立完成的任务 · 2026.01", "AI 有一半把握完成的任务长度：2019 年起约 7 个月翻一倍，2023 年起约 4 个月",
       viz="metr", image="metr_fig1.png", story="GPT-4：3.5 分钟\nClaude Opus 4.5：5 小时 20 分", lift=60, cat="智能体"),
-    B(279.568, 2026.118, "字节 Seedance 2.0", "字节跳动 Seedance 2.0 · 2026.02", "画面和声音一起生成，还能多镜头叙事", viz="video_av",
+    B(264.126, 2026.118, "字节 Seedance 2.0", "字节跳动 Seedance 2.0 · 2026.02", "画面和声音一起生成，还能多镜头叙事", viz="video_av",
       story="片段全网疯传，迪士尼发出停止侵权函", lift=50, cat="视频",
       echo=[(2024.124, "Sora"), (2025.38, "AI 视频"), (2025.44, "Seedance 1.0")]),
-    B(283.446, 2026.173, "GPT-5.4", "GPT-5.4 · 2026.03", "OpenAI 第一个原生会操作电脑的通用模型", viz="bars:gpt54",
+    B(268.004, 2026.173, "GPT-5.4", "GPT-5.4 · 2026.03", "OpenAI 第一个原生会操作电脑的通用模型", viz="bars:gpt54",
       story="超过了人类基线 72.4%", echo=[(2024.806, "AI 操作电脑")], lift=50, cat="超越人类"),
-    B(287.3, 2026.265, "Claude Mythos 突破沙盒", "Claude Mythos · 2026.04", "测试中被要求逃出沙盒，它做到了，还给研究员发了邮件", viz="sandbox",
+    B(271.858, 2026.265, "Claude Mythos 突破沙盒", "Claude Mythos · 2026.04", "测试中被要求逃出沙盒，它做到了，还给研究员发了邮件", viz="sandbox",
       story="同一个模型，在各大操作系统和浏览器里\n找出了数千个零日漏洞", lift=60, cat="安全"),
-    B(291.178, 2026.385, "推翻 Erdős 猜想", "Erdős 单位距离猜想 · 2026.05", "1946 年的数学猜想，被 AI 找到反例", viz="unitdist", image="erdos_p1.png", echo=[(2023.95, "FunSearch"), (2025.365, "AlphaEvolve")],
+    B(275.736, 2026.385, "推翻 Erdős 猜想", "Erdős 单位距离猜想 · 2026.05", "1946 年的数学猜想，被 AI 找到反例", viz="unitdist", image="erdos_p1.png", echo=[(2023.95, "FunSearch"), (2025.365, "AlphaEvolve")],
       story="高尔斯：这无疑是人工智能数学的一座里程碑", lift=80, cat="数学"),
-    B(295.033, 2026.585, "十项数学成果", "OpenAI 十项数学成果 · 2026.08", "一次公布十项研究级数学进展，每项都附机器可检验的证明", viz="math10", image="ten_advances_p1.png", echo=[(2026.385, "Erdős")], lift=80, cat="数学"),
-    B(298.887, 2026.69, "千禧年难题", "Navier–Stokes 方程 · 2026.09", "千禧年难题：AI 给出了一个解答", viz="ns",
+    B(279.591, 2026.585, "十项数学成果", "OpenAI 十项数学成果 · 2026.08", "一次公布十项研究级数学进展，每项都附机器可检验的证明", viz="math10", image="ten_advances_p1.png", echo=[(2026.385, "Erdős")], lift=80, cat="数学"),
+    B(283.445, 2026.69, "千禧年难题", "Navier–Stokes 方程 · 2026.09", "千禧年难题：AI 给出了一个解答", viz="ns",
       story="克雷研究所：「看来已经被解决」，评审仍在进行", major=250, cat="数学",
       echo=[(1956.6, "达特茅斯会议"), (2025.55, "奥数金牌"), (2026.385, "Erdős")]),
-    B(302.765, 2026.765, "数学手稿", "OpenAI · 2026.10", "公开的数学手稿，部分仍在验证", readout=("719 篇", "数学手稿"), echo=[(2026.585, "十项数学成果"), (2026.69, "千禧年难题")], lift=100, cat="数学"),
+    B(287.323, 2026.765, "数学手稿", "OpenAI · 2026.10", "公开的数学手稿，部分仍在验证", readout=("719 篇", "数学手稿"), echo=[(2026.585, "十项数学成果"), (2026.69, "千禧年难题")], lift=100, cat="数学"),
 ]
-INJECT = 0.8              # the window shrinks and flies into the head during the last INJECT seconds
+INJECT = BEAT             # the window shrinks and flies into the head during the last beat before the node
 for _i, _b in enumerate(BEATS):
     gap_prev = _b["at"] - BEATS[_i - 1]["at"] if _i else 8.0
     _b["lead"] = _b.get("lead_fixed") or max(2.0, min(5.5, 0.6 * gap_prev))
+    _bt = beat_times()                                  # windows open on a beat, at least two beats before the node
+    _o = snap(_b["at"] - _b["lead"], half=False)
+    while _b["at"] - _o < 1.5 * BEAT:
+        _o = float(_bt[max(0, int(np.argmin(np.abs(_bt - _o))) - 1)])
+    _b["lead"] = _b["at"] - _o
     _b["open"] = _b["at"] - _b["lead"]
 def has_img(name):
     return bool(name) and all(os.path.exists(os.path.join(IMG, n)) for n in name.split("|"))
@@ -331,17 +354,20 @@ for _i, _b in enumerate(BEATS):                       # what fills the window: a
         _prev = next((q["win"] for q in reversed(BEATS[:_i]) if q.get("win")), None)
         if _prev:
             _b["win"] = (_prev[0], _prev[1], _prev[2], True)
-STOP = (210.024, 213.879)        # the stop before ChatGPT: freeze, dim, one line, the music drops out
-WALL = (304.2, 306.62)           # manuscript pages pile up, then the head breaks through
-EXCUSE = (306.62, 309.3)         # 借过一下
-OVERVIEW = (309.0, 311.2)        # pull back to the whole line, label every important date, hold
+STOP = (194.582, 198.437)        # the stop before ChatGPT: freeze, dim, one line, the music drops out
+WALL = (288.758, 291.178)           # manuscript pages pile up, then the head breaks through
+OVERVIEW = (snap(293.558, half=False), 0.0)                       # pull back to the whole line, on a beat, two beats long
+OVERVIEW = (OVERVIEW[0], snap(OVERVIEW[0] + 2 * BEAT, half=False))
+EXCUSE = (291.178, OVERVIEW[0] + 0.3)        # 借过一下
 CLOSING = [                      # from can't to can: the gaps shrink
     ("从只会套模板，到真正会聊天", "56 年"), ("从连「异或」都算不了，到下赢围棋世界冠军", "47 年"),
     ("从会聊天，到拿奥数金牌", "不到 3 年"), ("从吃面都吃不明白，到视频以假乱真", "2 年"),
     ("从奥数银牌，到金牌", "1 年"), ("从推翻数学猜想，到千禧年难题", "111 天"),
 ]
-CLOSING_T0, CLOSING_DT = 312.6, 1.7
-QUESTION_T = CLOSING_T0 + CLOSING_DT * len(CLOSING) + 0.6
+CLOSING_T0, CLOSING_DT = 297.158, 1.7
+CLOSING_T0 = snap(CLOSING_T0, half=False)                          # one closing line every two beats
+CLOSING_TS = [snap(CLOSING_T0 + 2 * BEAT * k, half=False) for k in range(len(CLOSING))]
+QUESTION_T = snap(CLOSING_TS[-1] + 2 * BEAT, half=False)
 FADE = (QUESTION_T + 3.4, QUESTION_T + 4.6)
 DURATION = round(FADE[1], 2)
 for _b in BEATS:                                       # nothing of the next node shows during the stop
@@ -393,7 +419,7 @@ FLASH = [
     ("2024-05-08", "AlphaFold 3", "预测分子间的相互作用", None),
     ("2024-06-18", "英伟达", "市值登顶全球第一", "新闻"),
     ("2024-06-20", "Claude 3.5 Sonnet", "编程能力大幅提升", None),
-    ("2024-06-25", "ESM3", "新荧光蛋白，相当 5 亿年进化", "论文"),
+    ("2024-06-25", "ESM3", "新荧光蛋白，约 5 亿年进化量", "论文"),
     ("2024-08-01", "欧盟 AI 法案", "正式生效", "新闻"),
     ("2024-12-20", "o3", "ARC-AGI 测试 87.5%", None),
     ("2024-12-26", "DeepSeek-V3", "训练算力约 558 万美元", None),
@@ -511,12 +537,34 @@ FLASH = [
     ("2025-06-11", "字节 Seedance 1.0", "视频生成榜单双第一", None),
     ("2025-09-30", "Sora 2", "App 不到 5 天下载破百万", None),
     ("2026-02-05", "GPT-5.3-Codex", "官方：早期版本帮忙调试了自己", None),
+    ("2022-09-21", "Whisper", "开源语音识别模型", None),
+    ("2022-09-29", "Make-A-Video", "文字直接生成视频", "论文"),
+    ("2022-09-29", "DreamFusion", "文字直接生成 3D 模型", "论文"),
+    ("2022-10-05", "AlphaTensor", "发现更快的矩阵乘法算法", "论文"),
+    ("2022-11-05", "Midjourney V4", "AI 画图再升级", None),
+    ("1974-08-15", "Werbos", "论文里提出反向传播雏形", "论文"),
+    ("1979-07-15", "BKG 9.8", "7 比 1 赢了世界冠军", "超越人类"),
+    ("1980-04-15", "新认知机", "卷积网络的前身", "论文"),
+    ("1982-04-15", "Hopfield 网络", "42 年后拿了诺贝尔奖", "论文"),
+    ("1982-06-01", "第五代计算机", "日本启动智能计算机计划", "新闻"),
+    ("1985-03-01", "玻尔兹曼机", "后来也写进了诺奖理由", "论文"),
+    ("1989-05-01", "Q 学习", "强化学习的经典算法", "论文"),
+    ("1989-12-01", "LeNet 读邮编", "卷积网络读懂手写数字", "论文"),
 ]
 FL_LIFE = 3.0
+CD_FROM = 2017.45          # the Transformer
+GPT35 = date_to_year("2022-11-30")
+
+
+def countdown_days(T):
+    import datetime
+    return max(0, (datetime.date(2022, 11, 30) - date_label(T)).days)
 TFs = (2017.45, "Transformer")
 FLASH_SRC = {                                          # flash name -> the seeds that light up and send a spark into it
+    "Hopfield 网络": [(1943.95, "神经元模型")], "LeNet 读邮编": [(1980.29, "新认知机"), (1986.78, "反向传播")],
+    "DQN": [(1989.33, "Q 学习"), (2012.75, "AlexNet")], "玻尔兹曼机": [(1982.29, "Hopfield 网络")],
     "GPT-1": [TFs], "GPT-2": [TFs, (2018.43, "GPT-1")], "LLaMA": [TFs], "Gemini": [TFs], "Claude 3": [TFs],
-    "DALL·E 2": [(2015.2, "扩散模型"), (2021.01, "DALL·E")], "Midjourney": [(2015.2, "扩散模型")],
+    "DALL·E 2": [(2015.2, "扩散模型"), (2021.01, "DALL·E")], "Midjourney": [(2015.2, "扩散模型")], "Midjourney V4": [(2015.2, "扩散模型")], "Make-A-Video": [(2015.2, "扩散模型")],
     "Sora": [(2024.124, "Sora")], "快手可灵": [(2022.965, "DiT")], "字节 Seedance 1.0": [(2022.965, "DiT")],
     "Sora 2": [(2024.124, "Sora")], "Seedance 2.5": [(2026.118, "Seedance 2.0")], "Veo 2": [(2015.2, "扩散模型")], "ViT": [TFs], "CLIP": [TFs], "Flamingo": [TFs, (2021.01, "CLIP")],
     "DiT": [TFs, (2015.2, "扩散模型")], "LLaVA": [(2021.01, "CLIP"), TFs], "Genie": [(2018.24, "World Models")],
@@ -552,7 +600,7 @@ def flashes():
         if i >= len(ts):
             continue
         q = [int(x) for x in d.split("-")]
-        out.append(dict(t=float(ts[i]), year=y, name=name, text=txt, tag=tag,
+        out.append(dict(t=snap(float(ts[i])), year=y, name=name, text=txt, tag=tag,
                         dl=f"{q[1]:02d}.{q[2]:02d}" if q[0] >= 2026 else f"{q[0]}.{q[1]:02d}"))
     return out
 
@@ -1819,6 +1867,7 @@ def _render_frame(t):
     ctx = cairo.Context(s)
     pw = palette_weights(T)
     intro = float(smooth(t / 0.25))
+    cd_on = CD_FROM <= T < GPT35 - 1e-4 and ov < 0.5 and not (STOP[0] <= t < STOP[1] + 0.2)
 
     ctx.set_source_surface(background("warm"), 0, 0); ctx.paint()
     if pw["mono"] > 0.01:
@@ -2068,7 +2117,7 @@ def _render_frame(t):
             pr_, py0_, pmw_, pmh_ = LAYOUT["photo"]
             ps = photo_surface(bt["image"], max_w=pmw_, max_h=pmh_, mono=bt["year"] < 2012.7)
             pw_, ph_ = ps.get_width(), ps.get_height()
-            ctx.set_source_surface(ps, W - pr_ - pw_, py0_ + (pmh_ - ph_) / 2 - 4 * dt); ctx.paint_with_alpha(a * (1 - ov))
+            ctx.set_source_surface(ps, W - pr_ - pw_, py0_ + (pmh_ - ph_) / 2 - 4 * dt + (92 if cd_on else 0)); ctx.paint_with_alpha(a * (1 - ov))
 
     # kept labels: key nodes stay named on the line once their moment has passed (small, skipped if crowded)
     cnt_y = hyp + 76                                   # the list steps below any node name in its way
@@ -2157,12 +2206,17 @@ def _render_frame(t):
     switch = [(2023.0, "进入「月」为单位"), (2026.0, "进入「日」为单位")]
     hint = None
     for ty, msg in switch:
-        tt0 = float(np.interp(ty, [k[1] for k in KEYS if k[0] < 306], [k[0] for k in KEYS if k[0] < 306]))
+        tt0 = snap(float(np.interp(ty, [k[1] for k in KEYS if k[0] < 306 - 15.442], [k[0] for k in KEYS if k[0] < 306 - 15.442])), half=False)
         if 0 <= t - tt0 < 3.6:
             hint = (msg, float(smooth((t - tt0) / 0.4)) * (1 - float(smooth((t - tt0 - 3.0) / 0.6))))
     if hint:
         gs_, gw_, gh_, gb_ = glow_text(hint[0], 40, "#f2c14e", True)
         ctx.set_source_surface(gs_, W - 30 - gw_ + 20, cy_ + 50 - gb_ + 10); ctx.paint_with_alpha(hint[1] * (1 - ov))
+    elif cd_on:                                        # counting down to GPT-3.5
+        ca = float(smooth((T - CD_FROM) / 0.15))
+        text(ctx, "距离 GPT-3.5 上线", W - 40, cy_ + 48, 26, pal_color("cream", T), 0.8 * ca, align="right")
+        gs_, gw_, gh_, gb_ = glow_text(f"还有 {countdown_days(T)} 天", 46, "#f2c14e", True)
+        ctx.set_source_surface(gs_, W - 40 - gw_ + 23, cy_ + 104 - gb_); ctx.paint_with_alpha(ca)
     elif has_line and T > 2022.9:
         text(ctx, unit, W - 40, cy_ + 50, 26, pal_color("cream", T), 0.55 * intro * (1 - ov), align="right")
 
@@ -2180,6 +2234,9 @@ def _render_frame(t):
         gs_, gw_, gh_, gb_ = glow_text("时间，开始加速了。", 66, "#efe3c6", True)
         a = float(smooth((t - STOP[0] - 0.5) / 0.6)) * (1 - float(smooth((t - STOP[1] + 0.25) / 0.25)))
         ctx.set_source_surface(gs_, (W - gw_) / 2, 0.36 * H - gb_); ctx.paint_with_alpha(a)
+        n_ = countdown_days(T)                         # the countdown, big, while time holds its breath
+        gs_, gw_, gh_, gb_ = glow_text(f"距离 GPT-3.5 上线，还有 {n_} 天" if n_ > 0 else "GPT-3.5 上线", 52, "#f2c14e", True)
+        ctx.set_source_surface(gs_, (W - gw_) / 2, 0.36 * H + 120 - gb_); ctx.paint_with_alpha(a)
 
     # the wall: the real result titles of OpenAI's maths collection pour in, then the head breaks through them
     if WALL[0] - 1.5 <= t < EXCUSE[1]:
@@ -2269,9 +2326,9 @@ def _render_frame(t):
                 ctx.move_to(x - 6, y); ctx.line_to(x - 26, ly - 8); ctx.stroke()
                 text(ctx, name, x - 30, ly, 25, pal_color("cream", T), a, align="right")
                 text(ctx, dl, x - 30 - wn - 10, ly, 21, hx("#f2c14e"), a, align="right")
-    if ov > 0.5 and has_line and t >= OVERVIEW[1] + 0.2:   # 1943 -> GPT-3.5: 79 years; GPT-3.5 -> today: 1418 days
-        a1 = float(smooth((t - OVERVIEW[1] - 0.2) / 0.6))
-        a2 = float(smooth((t - OVERVIEW[1] - 1.2) / 0.6))
+    if ov > 0.5 and has_line and t >= OVERVIEW[1]:   # 1943 -> GPT-3.5: 79 years; GPT-3.5 -> today: 1418 days
+        a1 = float(smooth((t - OVERVIEW[1]) / 0.4))                       # on the beat after the pull-back
+        a2 = float(smooth((t - snap(OVERVIEW[1] + BEAT, half=False)) / 0.4))
         yb = ax_y + 84
         x0b, xkb, xtb = float(sx(cam, 1943.95)), float(sx(cam, 2022.915)), float(sx(cam, STORY_END))
         cream, gold = pal_color("cream", T), hx("#f2c14e")
@@ -2298,7 +2355,7 @@ def _render_frame(t):
             ctx.set_source_rgba(0.035, 0.03, 0.025, 0.72 * ap)
             ctx.rectangle(cx0 - 40, cy0 - 60, 900, cdy * len(CLOSING) + 118); ctx.fill()
         for k, (lhs, rhs) in enumerate(CLOSING):
-            a = float(smooth((t - CLOSING_T0 - CLOSING_DT * k) / 0.5))
+            a = float(smooth((t - CLOSING_TS[k]) / 0.35))
             if a <= 0:
                 continue
             y = cy0 + cdy * k
