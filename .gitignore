@@ -10,6 +10,12 @@ ai_history/images/*
 !ai_history/images/LICENSES.md
 ai_history/bgm/
 ai_history/film_out/
+compute/bgm/
+compute/film_out/
+quant/bgm/
+quant/film_out/
+quant/memes/
+quant/sfx/
 
 # caches
 manim/scenes/media/

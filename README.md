@@ -16,26 +16,32 @@
 
 </div>
 
-## 两期视频
+## 视频
 
 <table>
 <tr>
-<td width="50%" align="center" valign="top">
-<img src="alphago/cover_3x4.jpg" width="240" alt="第一期封面"><br>
+<td width="33%" align="center" valign="top">
+<img src="alphago/cover_3x4.jpg" width="220" alt="第一期封面"><br>
 <b>第一期：AlphaGo 第 37 手，它在想什么？</b><br>
 蒙特卡洛树搜索讲给不懂围棋的人<br>
 <sub>Manim · B站 16:9 7:27 · 竖版 1:46</sub>
 </td>
-<td width="50%" align="center" valign="top">
-<img src="ai_history/cover/cover_3x4.jpg" width="240" alt="第二期封面"><br>
+<td width="33%" align="center" valign="top">
+<img src="ai_history/cover/cover_3x4.jpg" width="220" alt="第二期封面"><br>
 <b>第二期：AI 发展路线图</b><br>
 一条会发光的线，从 1943 年走到 2026-10-18<br>
 <sub>自写逐帧渲染器 · 竖版 5:16 · B站横版 · 抖音 3:20 剪辑版</sub>
 </td>
+<td width="33%" align="center" valign="top">
+<img src="docs/img/quant_menu.jpg" width="220" alt="第四期竖屏短片里的公式菜单"><br>
+<b>第四期：一口气教你学会量化交易</b><br>
+找规律、回测、下注、下单，四步讲完<br>
+<sub>同一个渲染器 · 横版 4:27 · 竖屏短片「选择你的量化公式」0:27</sub>
+</td>
 </tr>
 </table>
 
-成片不在仓库里：单个约 120 MB，而且压进了有版权的配乐和新闻图片。
+第三期（算力）暂时搁置，没进仓库。成片也不在仓库里：单个约 80–120 MB，而且压进了有版权的配乐、新闻图片和表情包。
 
 <!-- 抖音 / B站 发布链接：待补 -->
 
@@ -99,6 +105,19 @@ def render_frame(t, dur):
 </tr>
 </table>
 
+## 第四期：一章一个舞台
+
+<img src="docs/img/quant_stages.jpg" width="100%" alt="第四期六个舞台：终端、股票墙、胶片机、筹码桌、撮合口、片尾公式墙">
+
+第二期是一条线从头长到尾；第四期换了思路：每章搭一个舞台，镜头之间是同一个物件在变，不切到新的示意图。每个镜头只有一个主体、一个强拍，画面里最多一个词或数字。
+
+- **公式卡**：[`quant/make_formulas.py`](quant/make_formulas.py) 用 LaTeX 排版，要单独点亮的项印成纯红、纯绿、纯蓝……渲染器按颜色把每一项切成自己的遮罩，讲到哪一项就在那一拍点亮。
+- **分镜就是数据**：字幕、时间和角落里的出处注释都从 [`quant.scenes.md`](manim/scenes/quant.scenes.md) 的表格里读；`check` 会挡住读不完的字幕和没落在拍子上的行。
+- **卡点**：正片按 80.2 BPM 的均匀拍网格剪；片尾的歌用 `analyze_bgm.py` 测出真实节拍，第二段副歌的下拍和「来不及为古法交易哀悼了」落在同一帧。
+- **没有配乐的地方**：正片只有合成音效，第一版实测才 −35 LUFS；现在音效单独成一轨，抬 12 dB 再限幅，然后才和歌混在一起。
+- **竖屏短片**：同一条时间线，`short_frame(t)` 把横版画面缩进 1080×1920，外圈接着画同一个房间（网格对齐，接缝看不出）。中段换成可以在评论区回数字的编号公式菜单，结尾的「理论上」按竖屏尺寸重画。
+- **借另一台机器渲染**：[`tools/remote_render.sh`](tools/remote_render.sh) 把仓库推到另一台 Mac，在那边低优先级并行渲染，再把结果拉回来。
+
 ## 流水线
 
 ```mermaid
@@ -127,10 +146,11 @@ flowchart LR
 | 节拍分析 | numpy + scipy 自己写 | 频谱通量 → 自相关测速 → 动态规划追拍（Ellis 2007） |
 | 音效 | numpy 合成 | 正弦波 + 带种子的噪声，无版权 |
 | 响度 | ffmpeg `loudnorm` / `ebur128` | 平台成片 −14 LUFS，真峰值 −1.5 dBTP |
-| 封面 | HTML + headless Chrome（第一期）；渲染器总览帧（第二期） | 首帧和封面一致 |
+| 封面 | HTML + headless Chrome（第一期）；渲染器总览帧（第二期）；短片首帧（第四期） | 首帧和封面一致 |
+| 公式排版 | pdflatex + PDFKit（第四期） | 要点亮的项印成纯色，渲染时按颜色切成遮罩 |
 | 论文页 | macOS PDFKit（Swift） | arXiv PDF 截某一页 |
 | 图片来源 | Wikimedia API | 拿真实地址和授权，记进 `LICENSES.md` |
-| 字体 | 宋体 Songti SC、Times New Roman、STIX Two Math | macOS 自带 |
+| 字体 | 宋体 Songti SC、Times New Roman、STIX Two Math；第四期用苹方 PingFang SC | macOS 自带 |
 | 写代码、渲染、自查 | [Claude Code](https://claude.com/product/claude-code) | 抽帧看图、跑断言、量响度和卡点 |
 | 文案初稿、交叉核查 | Pi 调多个模型（Kimi、Grok、GPT） | 输出只当线索，事实都回到原始来源确认 |
 
@@ -146,6 +166,8 @@ flowchart LR
 | [`manim/sfx/master_audio.py`](manim/sfx/master_audio.py) | 压缩 + 响度 + 限幅，前后数字都打印出来 | `python master_audio.py in.mp4 out.mp4 --target -24` |
 | [`tools/wiki_image.py`](tools/wiki_image.py) | 查维基图片的真实地址、尺寸、授权、作者 | `python tools/wiki_image.py "File:Eniac.jpg"` |
 | [`tools/pdfpage.swift`](tools/pdfpage.swift) | PDF 某一页 → PNG（macOS） | `swift tools/pdfpage.swift paper.pdf 0 p1.png 1600` |
+| [`tools/remote_render.sh`](tools/remote_render.sh) | 在另一台 Mac 上渲染：装环境、推代码、远程跑、取回结果 | `RENDER_HOST=user@host.local tools/remote_render.sh run '…'` |
+| [`quant/make_formulas.py`](quant/make_formulas.py) | LaTeX 公式 → PNG，要点亮的项印成纯色 | `python3 quant/make_formulas.py` |
 | [`docs/make_img.py`](docs/make_img.py) | 从渲染器直接出 README 里的这些图 | `python docs/make_img.py` |
 
 每个工具的原理、参数和踩过的坑写在 **[方法与工具.md](方法与工具.md)**；选题、讲法、字幕、封面、文案的经验写在 **[爆款科普视频手册.md](爆款科普视频手册.md)**。
@@ -157,7 +179,8 @@ flowchart LR
 - **卡点要量出来**：节拍表 → 窗口打开对齐整拍、小条对齐半拍 → `beatcheck.py` 验收。第一次量只有 11% 在一帧以内，原因是剪辑点不在帧边界上；改完之后是 90%，中位误差 17 ms。
 - **首帧就是封面**：v7 加了一小节冷开场，第一帧和封面一模一样。
 - **发出去再改一版**：v7 在 ChatGPT 之前的空档补了小条，第一次寒冬剪掉 4 小节音乐，抖音另出一个 3 分钟版。
-- **一份代码出两种画幅**：所有位置写在 `LAYOUT` 字典里，加横版后先确认竖版逐像素没变。
+- **一份代码出两种画幅**：所有位置写在 `LAYOUT` 字典里，加横版后先确认竖版逐像素没变。第四期反过来，竖屏短片直接复用横版的 `render_frame(t)`。
+- **先定整片，再磨单镜**：第四期先把全部文案和分镜锁死，再一镜一镜重画；单镜磨得再好，整片节奏不对也得推倒。
 
 ## 自己跑起来
 
@@ -185,6 +208,23 @@ python beatcheck.py ../../ai_history/film_out/ai_history_v7.mp4 --cold 3.8667 --
 - **配乐**：放进 `ai_history/bgm/`，文件名见渲染器里的 `BGM_FILE`；节拍表用 `analyze_bgm.py` 生成。
 - **音效**：`python manim/sfx/make_sfx.py` 重新生成。
 
+第四期（在 `manim/scenes` 下）：
+
+```bash
+python quant_film.py check                                  # 字幕阅读时间、拍网格、素材齐不齐
+python quant_film.py snap 25.9 118.3 241                    # 抽几帧，出联系表
+python quant_film.py render 0 267.49 --jobs 18 --name rough_v5
+python quant_film.py short --jobs 18                        # 竖屏短片「选择你的量化公式」
+python quant_film.py snap --short 233 251                   # 短片抽帧
+```
+
+公式图已经在仓库里（[`quant/formulas/`](quant/formulas/)，`make_formulas.py` 可以重出）。还要补齐：
+
+- **配乐**：片尾的歌放进 `quant/bgm/`，文件名见 `quant_kit.py` 里的 `FINALE_SONG`；节拍表用 `analyze_bgm.py` 生成。
+- **表情包**：放进 `quant/memes/`，缺哪张 `check` 会列出来。
+- **音效**：`python manim/sfx/make_sfx.py` 重新生成。
+- **另一台 Mac 渲染**：`export RENDER_HOST=user@host.local`，然后 `tools/remote_render.sh setup`（只需一次）、`push`、`run '…'`、`pull quant/film_out`。
+
 第一期：
 
 ```bash
@@ -201,7 +241,8 @@ python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 ├── tools/                        通用小工具
 │   ├── minimal_film.py           80 行逐帧渲染模板
 │   ├── wiki_image.py             维基图片：真实地址 + 授权
-│   └── pdfpage.swift             PDF 页 → PNG
+│   ├── pdfpage.swift             PDF 页 → PNG
+│   └── remote_render.sh          在另一台 Mac 上渲染
 ├── manim/
 │   ├── scenes/
 │   │   ├── ai_history_film.py    第二期渲染器（竖版 / 横版同一份代码）
@@ -209,6 +250,10 @@ python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 │   │   ├── assemble_v7.sh        拼接三个成片
 │   │   ├── beatcheck.py          卡点验收
 │   │   ├── ai_history.scenes.md  第二期分镜与修订记录（最新在前）
+│   │   ├── quant_film.py         第四期渲染器：主镜头、排片、字幕、声音、命令（含竖屏短片）
+│   │   ├── quant_kit.py          第四期的画面词汇：配色、拍网格、绘图函数
+│   │   ├── quant_shots_[abc].py  第四期各章的镜头
+│   │   ├── quant.scenes.md       第四期分镜：字幕、时间、注释都从这里读
 │   │   ├── alphago_mcts.py       第一期 Manim 代码
 │   │   └── style.py              配色、字体、阅读时间
 │   └── sfx/                      音效合成、母带、节拍分析
@@ -219,6 +264,9 @@ python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 │   ├── images.md, images/LICENSES.md  每张图的来源与授权（图片本身不在仓库）
 │   ├── copy.md                   抖音、B站的标题、简介、章节、置顶评论
 │   └── cover/                    封面
+├── quant/                        第四期资料
+│   ├── make_formulas.py          LaTeX 公式 → PNG
+│   └── formulas/                 生成好的公式图
 ├── alphago/                      第一期封面源文件、截图、发布文案
 └── docs/                         README 配图和生成脚本
 ```
@@ -227,6 +275,6 @@ python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 
 - 代码、我们自己写的文档和数据：MIT（见 [`LICENSE`](LICENSE)）。
 - 不包括第三方素材：
-  - 图片和配乐不在仓库里，版权归原作者。
+  - 图片、表情包和配乐不在仓库里，版权归原作者。
   - `openai_math_families.json` 来自 [openai/math](https://github.com/openai/math)，遵循 Apache-2.0。
   - 引用的原话和论文标题都注明了出处。

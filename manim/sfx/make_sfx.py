@@ -248,6 +248,15 @@ def ambient(dur=32.0):
     return lowpass(np.tile(x, 2), 1400)[len(t):]                  # filter on two copies, keep the steady-state second one
 
 
+def pulse():
+    """The bar's downbeat where there is no music: a soft low thump (sine falling 72 -> 46 Hz) with a muted click."""
+    d = 0.5
+    x = saturate(glide(72, 46, d) * env_exp(d, 0.12, 0.004), 1.8)
+    n = int(0.012 * SR)
+    x[:n] += 0.2 * lowpass(rng.normal(0, 1, n), 1600) * np.linspace(1, 0, n)
+    return x
+
+
 def write_bed(total, path, fade_in=2.5, fade_out_s=4.0):
     """Ambient bed of exactly `total` seconds (the 32 s loop tiled, faded in and out), peak -3 dBFS.
 
@@ -267,7 +276,7 @@ def write_bed(total, path, fade_in=2.5, fade_out_s=4.0):
 SOUNDS = {
     "stone": stone, "stone_big": stone_big, "tick": tick, "pop": pop, "card": card, "shuffle": shuffle,
     "rain": rain, "whoosh": whoosh, "whoosh_soft": whoosh_soft, "chime": chime, "success": success,
-    "question": question, "boom": boom, "riser": riser, "dice": dice, "ambient": ambient,
+    "question": question, "boom": boom, "riser": riser, "dice": dice, "ambient": ambient, "pulse": pulse,
 }
 
 # Loudness tiers: the loudest 50 ms of each sound should land here after its gain (dBFS). Accents (aha / slam /
@@ -277,7 +286,7 @@ SOUNDS = {
 TARGET = {
     "stone_big": -21, "boom": -20, "success": -23, "chime": -24,
     "stone": -27, "question": -28, "whoosh": -30, "riser": -29, "dice": -30, "shuffle": -30,
-    "pop": -33, "card": -33, "tick": -35,
+    "pop": -33, "card": -33, "tick": -35, "pulse": -33,
     "rain": -37, "whoosh_soft": -35, "ambient": -41,
 }
 

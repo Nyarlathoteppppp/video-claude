@@ -1,7 +1,8 @@
-"""The README pictures, rendered straight from the film renderer: a strip of key frames, an annotated frame, and a GIF
-of the closing pull-back. Needs the same inputs as the renderer (images, beat table).
+"""The README pictures, rendered straight from the film renderers: for episode 2 a strip of key frames, an annotated
+frame and a GIF of the closing pull-back; for episode 4 one frame per chapter stage and the short's formula menu.
+Needs the same inputs as the renderers (images, beat tables).
 
-    python docs/make_img.py                 # all three -> docs/img/
+    python docs/make_img.py                 # all four -> docs/img/
     python docs/make_img.py anatomy         # just one
 """
 import math
@@ -23,11 +24,19 @@ TMP = os.path.join(tempfile.gettempdir(), "video_claude_gif")
 GOLD = (0.93, 0.78, 0.45)
 
 
+def to_image(s):
+    a = np.ndarray((s.get_height(), s.get_width(), 4), np.uint8, s.get_data(), strides=(s.get_stride(), 4, 1))
+    return Image.fromarray(a[:, :, [2, 1, 0]].copy())
+
+
 def frame(t):
     import ai_history_film as F
-    s = F.render_frame(t)
-    a = np.ndarray((F.H, F.W, 4), np.uint8, s.get_data(), strides=(s.get_stride(), 4, 1))
-    return Image.fromarray(a[:, :, [2, 1, 0]].copy())
+    return to_image(F.render_frame(t))
+
+
+def quant_frame(t, short=False):
+    import quant_film as Q
+    return to_image((Q.short_frame if short else Q.render_frame)(t))
 
 
 def gif_frame(k_t):
@@ -35,26 +44,41 @@ def gif_frame(k_t):
     frame(t).resize((360, 640), Image.LANCZOS).save(os.path.join(TMP, f"f{k:04d}.png"))
 
 
-def strip():
-    shots = [(3.0, "1943　起点"), (46, "第一次寒冬"), (127, "2012　AlexNet"), (196.5, "倒数 GPT-3.5"),
-             (246, "2025　奥数金牌"), (309.5, "79 年 vs 1418 天")]
-    w, h, gap, cap = 300, 533, 12, 46
-    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, len(shots) * (w + gap) + gap, h + cap + gap)
+def sheet(shots, grab, w, h, cols, name):
+    """Captioned frames in a grid -> docs/img/<name>.jpg."""
+    gap, cap = 12, 46
+    rows = (len(shots) + cols - 1) // cols
+    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, cols * (w + gap) + gap, rows * (h + cap) + gap)
     c = cairo.Context(surf)
     c.set_source_rgb(0.07, 0.06, 0.05); c.paint()
     for i, (t, label) in enumerate(shots):
-        im = frame(t).resize((w, h), Image.LANCZOS).convert("RGBA")
+        im = grab(t).resize((w, h), Image.LANCZOS).convert("RGBA")
         b = np.array(im)[:, :, [2, 1, 0, 3]].copy()
         img = cairo.ImageSurface.create_for_data(memoryview(b), cairo.FORMAT_ARGB32, w, h, w * 4)
-        x = gap + i * (w + gap)
-        c.set_source_surface(img, x, gap); c.paint()
+        x, y = gap + (i % cols) * (w + gap), gap + (i // cols) * (h + cap)
+        c.set_source_surface(img, x, y); c.paint()
         c.select_font_face("Songti SC", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(22)
         ext = c.text_extents(label)
-        c.set_source_rgb(*GOLD); c.move_to(x + (w - ext.x_advance) / 2, gap + h + 32); c.show_text(label)
-    p = os.path.join(OUT, "frames_strip.png")
+        c.set_source_rgb(*GOLD); c.move_to(x + (w - ext.x_advance) / 2, y + h + 32); c.show_text(label)
+    p = os.path.join(OUT, name + ".png")
     surf.write_to_png(p)
     Image.open(p).convert("RGB").save(p.replace(".png", ".jpg"), quality=88)
     os.remove(p)
+
+
+def strip():
+    shots = [(3.0, "1943　起点"), (46, "第一次寒冬"), (127, "2012　AlexNet"), (196.5, "倒数 GPT-3.5"),
+             (246, "2025　奥数金牌"), (309.5, "79 年 vs 1418 天")]
+    sheet(shots, frame, 300, 533, len(shots), "frames_strip")
+
+
+def quant():
+    """Episode 4: each chapter's stage on its strongest beat, and the short's formula menu cropped 3:4 for its card."""
+    shots = [(25.9, "终端：规则写成程序"), (36.1, "股票墙：5000 只一起看"), (104.8, "胶片机：回测与过拟合"),
+             (118.3, "筹码桌：十次看运气"), (184.0, "撮合口：谁是对手"), (241.0, "公式墙：片尾卡点")]
+    sheet(shots, quant_frame, 600, 338, 3, "quant_stages")
+    menu = quant_frame(251.0, short=True).crop((0, 220, 1080, 1660)).resize((540, 720), Image.LANCZOS)
+    menu.save(os.path.join(OUT, "quant_menu.jpg"), quality=88)
 
 
 def anatomy():
@@ -104,7 +128,7 @@ def gif(a=290.5, b=301.0, fps=10, out_fps=8, size="300:533", colors=96):
 
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
-    what = sys.argv[1:] or ["strip", "anatomy", "gif"]
+    what = sys.argv[1:] or ["strip", "anatomy", "gif", "quant"]
     for w in what:
         globals()[w]()
         print("done", w)
