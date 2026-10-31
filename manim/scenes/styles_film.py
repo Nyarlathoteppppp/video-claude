@@ -9,6 +9,7 @@ A frame is a pure function of t, as in the other films.
     $PY styles_film.py snap SLUG t [t ...]            # frames -> styles/film_out/snaps/SLUG_t.png, to look at
     $PY styles_film.py stills [--allow-missing]       # one chosen frame per clip + overview -> docs/img/styles/
     $PY styles_film.py reel [--allow-missing]         # clips -> styles/film_out/reel.mp4
+    $PY styles_film.py cover                          # the reel's first frame with the hook -> styles/cover/
 """
 import argparse
 import importlib
@@ -808,6 +809,46 @@ def cmd_reel(allow_missing=False):
             os.remove(temporary)
 
 
+def cmd_cover():
+    """The reel's first frame with the hook where its title sits, so the cover and the opening are one picture; and the same windows three across for a 3:4 grid."""
+    from contextlib import ExitStack
+    clips = _film_clips()
+    with ExitStack() as stack:
+        wide = _wall_frame(clips, _wall_windows(stack, clips), [_CaptionTone() for _ in clips], title=0.0)
+    d = os.path.join(ROOT, "styles", "cover")
+    os.makedirs(d, exist_ok=True)
+
+    tall, c = canvas(INK, 1080, 1440)
+    _fine(c)
+    k = 1080 / 3 / CELL_W
+    top = 1440 - 5 * round(CELL_H * k)
+    for i in range(len(clips)):
+        x0, y0 = _wall_cell(i, len(clips))
+        x, y = (i % 3) * 360, top + (i // 3) * round(CELL_H * k)
+        c.save()
+        c.rectangle(x, y, 360, round(CELL_H * k))
+        c.clip()
+        c.translate(x, y)
+        c.scale(k, k)
+        c.set_source_surface(wide, -x0, -y0)
+        c.get_source().set_filter(cairo.FILTER_BEST)
+        c.paint()
+        c.restore()
+    c.set_antialias(cairo.ANTIALIAS_BEST)
+    _tracked(c, "13 种画风", 64, 214, 158, CREAM, SERIF, True, 0.03)
+    _tracked(c, "全是代码画的", 70, 332, 76, GOLD, SERIF, False, 0.1)
+    _film_jpeg(tall, os.path.join(d, "cover_3x4.jpg"))
+
+    c = cairo.Context(wide)
+    _fine(c)
+    c.set_antialias(cairo.ANTIALIAS_BEST)
+    x, y = _wall_cell(len(clips), len(clips))
+    _tracked(c, "13 种画风", x + 44, y + 138, 122, CREAM, SERIF, True, 0.03)
+    _tracked(c, "全是代码画的", x + 50, y + 222, 58, GOLD, SERIF, False, 0.1)
+    _film_jpeg(wide, os.path.join(d, "cover_16x9.jpg"))
+    print(d, flush=True)
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -821,6 +862,7 @@ if __name__ == "__main__":
     p.add_argument("--allow-missing", action="store_true")
     p = sub.add_parser("reel")
     p.add_argument("--allow-missing", action="store_true")
+    sub.add_parser("cover")
     a = ap.parse_args()
     if a.cmd == "clip":
         cmd_clip(a.slugs or [s for s, _ in STYLES], a.jobs)
@@ -832,5 +874,7 @@ if __name__ == "__main__":
                 cmd_stills(a.allow_missing)
             elif a.cmd == "reel":
                 cmd_reel(a.allow_missing)
+            elif a.cmd == "cover":
+                cmd_cover()
         except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
             sys.exit(str(exc))
