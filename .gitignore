@@ -21,3 +21,7 @@ quant/sfx/
 manim/scenes/media/
 **/__pycache__/
 .DS_Store
+
+# style samples: Blender renders before titling
+docs/img/styles/raw/
+styles/film_out/
