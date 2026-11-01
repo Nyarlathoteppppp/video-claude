@@ -10,9 +10,12 @@
 ![render](https://img.shields.io/badge/render-pycairo%20%2B%20numpy-c9a45c)
 ![ffmpeg](https://img.shields.io/badge/encode-ffmpeg-007808?logo=ffmpeg&logoColor=white)
 ![Manim](https://img.shields.io/badge/ep.1-Manim%20CE-555)
+![Blender](https://img.shields.io/badge/3D-Blender%20Cycles-E87D0D?logo=blender&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 <img src="docs/img/frames_strip.jpg" width="100%" alt="第二期《AI 发展路线图》的六个画面：1943 年起点、第一次寒冬、AlexNet、倒数 GPT-3.5、奥数金牌、79 年 vs 1418 天">
+
+[视频](#视频) · [风格库](#风格库13-种画风) · [一帧怎么画](#一帧画面是怎么画出来的) · [工具](#可以直接拿去用的工具) · [做法](#几条最有用的做法) · [自己跑起来](#自己跑起来)
 
 </div>
 
@@ -20,30 +23,49 @@
 
 <table>
 <tr>
-<td width="33%" align="center" valign="top">
-<img src="alphago/cover_3x4.jpg" width="220" alt="第一期封面"><br>
+<td width="25%" align="center" valign="top">
+<img src="alphago/cover_3x4.jpg" width="180" alt="第一期封面"><br>
 <b>第一期：AlphaGo 第 37 手，它在想什么？</b><br>
 蒙特卡洛树搜索讲给不懂围棋的人<br>
 <sub>Manim · B站 16:9 7:27 · 竖版 1:46</sub>
 </td>
-<td width="33%" align="center" valign="top">
-<img src="ai_history/cover/cover_3x4.jpg" width="220" alt="第二期封面"><br>
+<td width="25%" align="center" valign="top">
+<img src="ai_history/cover/cover_3x4.jpg" width="180" alt="第二期封面"><br>
 <b>第二期：AI 发展路线图</b><br>
 一条会发光的线，从 1943 年走到 2026-10-18<br>
 <sub>自写逐帧渲染器 · 竖版 5:16 · B站横版 · 抖音 3:20 剪辑版</sub>
 </td>
-<td width="33%" align="center" valign="top">
-<img src="docs/img/quant_menu.jpg" width="220" alt="第四期竖屏短片里的公式菜单"><br>
+<td width="25%" align="center" valign="top">
+<img src="docs/img/quant_menu.jpg" width="180" alt="第四期竖屏短片里的公式菜单"><br>
 <b>第四期：一口气教你学会量化交易</b><br>
 找规律、回测、下注、下单，四步讲完<br>
 <sub>同一个渲染器 · 横版 4:27 · 竖屏短片「选择你的量化公式」0:27</sub>
 </td>
+<td width="25%" align="center" valign="top">
+<img src="styles/cover/cover_3x4.jpg" width="180" alt="风格库样片封面：13 种画风，全是代码画的"><br>
+<b>样片：13 种画风，全是代码画的</b><br>
+每种 5 秒，每种配一个最能展示它的题材<br>
+<sub>cairo + Blender · 横版 1:09</sub>
+</td>
 </tr>
 </table>
 
-第三期（算力）暂时搁置，没进仓库。成片也不在仓库里：单个约 80–120 MB，而且压进了有版权的配乐、新闻图片和表情包。
+第三期（算力）暂时搁置，没进仓库。成片也不在仓库里：文件太大，前几期还压进了有版权的配乐、新闻图片和表情包。
 
 <!-- 抖音 / B站 发布链接：待补 -->
+
+## 风格库：13 种画风
+
+<img src="docs/img/styles/overview.jpg" width="100%" alt="13 种风格的样片总览，每格标着风格名">
+
+做片子可以挑的 13 种画面风格，每种都渲了一条样片。**[风格库.md](风格库.md)** 写了每种的识别特征、做法、适合的内容和踩过的坑，还有按内容类型挑风格的对照表。
+
+片子里没有外部图片和视频素材，画面全部由代码生成：
+
+- **2D**：每种风格一个 `style_*.py`，同样是时间 `t` 的纯函数，cairo 逐帧画。
+- **物理道具**：[`styles_blender.py`](manim/scenes/styles_blender.py) 和各个 `style_*_blender.py` 在 Blender 里用代码建模，Cycles 走 Metal GPU 渲染；液态金属是 Mantaflow 流体模拟。
+- **转场和总片**：[`styles_film.py`](manim/scenes/styles_film.py) 把 13 条串起来，每对相邻片段配专门的转场，开头和结尾是所有片子同时播放的窗口墙。
+- **配乐**：[`styles_score.py`](manim/scenes/styles_score.py) 用 ACE-Step 在本地生成无人声的音乐；[`styles_mix.py`](manim/scenes/styles_mix.py) 量出真实节拍，伸缩到每 8 拍切一次，把最强的进入点对齐第一个切点。
 
 ## 一帧画面是怎么画出来的
 
@@ -143,9 +165,11 @@ flowchart LR
 | 图片 | Pillow | 缩放、调色、贴图 |
 | 编码 | ffmpeg（libx264, crf 18） | 原始 BGRA 帧走管道，8 段并行后 concat |
 | 动画（第一期） | [Manim Community](https://www.manim.community/) | 树搜索、棋盘、柱状图 |
+| 3D、流体（风格库） | [Blender](https://www.blender.org/) Cycles + Mantaflow | 代码建模，Metal GPU 渲染 |
 | 节拍分析 | numpy + scipy 自己写 | 频谱通量 → 自相关测速 → 动态规划追拍（Ellis 2007） |
 | 音效 | numpy 合成 | 正弦波 + 带种子的噪声，无版权 |
-| 响度 | ffmpeg `loudnorm` / `ebur128` | 平台成片 −14 LUFS，真峰值 −1.5 dBTP |
+| 配乐（风格库） | [ACE-Step](https://github.com/ace-step/ACE-Step-1.5) | 本地生成，不带人声 |
+| 响度 | ffmpeg `loudnorm` / `ebur128` | 平台成片 −14 LUFS，真峰值 −1.5 dBTP；风格库样片只有音乐，压到 −18 LUFS |
 | 封面 | HTML + headless Chrome（第一期）；渲染器总览帧（第二期）；短片首帧（第四期） | 首帧和封面一致 |
 | 公式排版 | pdflatex + PDFKit（第四期） | 要点亮的项印成纯色，渲染时按颜色切成遮罩 |
 | 论文页 | macOS PDFKit（Swift） | arXiv PDF 截某一页 |
@@ -181,6 +205,7 @@ flowchart LR
 - **发出去再改一版**：v7 在 ChatGPT 之前的空档补了小条，第一次寒冬剪掉 4 小节音乐，抖音另出一个 3 分钟版。
 - **一份代码出两种画幅**：所有位置写在 `LAYOUT` 字典里，加横版后先确认竖版逐像素没变。第四期反过来，竖屏短片直接复用横版的 `render_frame(t)`。
 - **先定整片，再磨单镜**：第四期先把全部文案和分镜锁死，再一镜一镜重画；单镜磨得再好，整片节奏不对也得推倒。
+- **物理道具用真 3D**：风格库里，2D 假装的金属和液体放大就露馅，改用 Blender 建模和模拟；字幕和文字仍回到 cairo 里叠。
 
 ## 自己跑起来
 
@@ -191,7 +216,10 @@ pip install pycairo numpy scipy pillow
 python tools/minimal_film.py demo.mp4          # 先跑通最小示例
 ```
 
-第二期（在 `manim/scenes` 下）：
+<details>
+<summary><b>第二期：AI 发展路线图</b></summary>
+
+在 `manim/scenes` 下：
 
 ```bash
 python ai_history_film.py check                                   # 核对数据和时间轴
@@ -208,7 +236,12 @@ python beatcheck.py ../../ai_history/film_out/ai_history_v7.mp4 --cold 3.8667 --
 - **配乐**：放进 `ai_history/bgm/`，文件名见渲染器里的 `BGM_FILE`；节拍表用 `analyze_bgm.py` 生成。
 - **音效**：`python manim/sfx/make_sfx.py` 重新生成。
 
-第四期（在 `manim/scenes` 下）：
+</details>
+
+<details>
+<summary><b>第四期：量化交易</b></summary>
+
+在 `manim/scenes` 下：
 
 ```bash
 python quant_film.py check                                  # 字幕阅读时间、拍网格、素材齐不齐
@@ -225,7 +258,10 @@ python quant_film.py snap --short 233 251                   # 短片抽帧
 - **音效**：`python manim/sfx/make_sfx.py` 重新生成。
 - **另一台 Mac 渲染**：`export RENDER_HOST=user@host.local`，然后 `tools/remote_render.sh setup`（只需一次）、`push`、`run '…'`、`pull quant/film_out`。
 
-第一期：
+</details>
+
+<details>
+<summary><b>第一期：AlphaGo</b></summary>
 
 ```bash
 manim -qh --disable_caching manim/scenes/alphago_mcts.py AlphaGoMCTS               # 16:9
@@ -233,11 +269,34 @@ manim -r 1080,1920 --disable_caching manim/scenes/alphago_mcts.py AlphaGoMCTSSho
 python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 ```
 
+</details>
+
+<details>
+<summary><b>风格库样片</b></summary>
+
+在 `manim/scenes` 下，只能在 Mac 上跑：文字用系统字体，Cycles 固定用 Metal。带 Blender 底片的风格要先出帧，流体重新烘焙耗时很长：
+
+```bash
+Blender -b --factory-startup -P styles_blender.py -- splash       # splash、letterpress、port、synthwave 各跑一次
+Blender -b --factory-startup -P style_glass_blender.py            # 其余 style_*_blender.py 同样各跑一次
+python3 styles_film.py clip --jobs 18                             # 13 条单片
+python3 styles_film.py snap flat 2.5                              # 抽帧看
+python3 styles_film.py reel                                       # 合成无声总片
+```
+
+配乐用 ACE-Step 自己的 Python 跑 `styles_score.py`，再用 `styles_mix.py` 对拍和混音。重渲细节见 [风格库.md](风格库.md#怎么重渲)。
+
+</details>
+
 ## 目录
+
+<details>
+<summary>展开目录结构</summary>
 
 ```
 ├── 方法与工具.md                 每个工具的原理、参数、踩过的坑
 ├── 爆款科普视频手册.md            选题、讲法、字幕、封面、文案的经验
+├── 风格库.md                     13 种画风：特征、做法、适合的内容、踩过的坑
 ├── tools/                        通用小工具
 │   ├── minimal_film.py           80 行逐帧渲染模板
 │   ├── wiki_image.py             维基图片：真实地址 + 授权
@@ -254,6 +313,10 @@ python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 │   │   ├── quant_kit.py          第四期的画面词汇：配色、拍网格、绘图函数
 │   │   ├── quant_shots_[abc].py  第四期各章的镜头
 │   │   ├── quant.scenes.md       第四期分镜：字幕、时间、注释都从这里读
+│   │   ├── styles_film.py        风格库总片：单片、抽帧、转场、封面
+│   │   ├── style_*.py            风格库的 2D 单片
+│   │   ├── styles_blender.py     风格库的 3D 和流体
+│   │   ├── styles_score.py, styles_mix.py  风格库的配乐生成和对拍混音
 │   │   ├── alphago_mcts.py       第一期 Manim 代码
 │   │   └── style.py              配色、字体、阅读时间
 │   └── sfx/                      音效合成、母带、节拍分析
@@ -267,9 +330,12 @@ python manim/sfx/master_audio.py 原片.mp4 成片.mp4 --target -24 --peak -1.5
 ├── quant/                        第四期资料
 │   ├── make_formulas.py          LaTeX 公式 → PNG
 │   └── formulas/                 生成好的公式图
+├── styles/                       风格库样片的封面和发布文案
 ├── alphago/                      第一期封面源文件、截图、发布文案
 └── docs/                         README 配图和生成脚本
 ```
+
+</details>
 
 ## 许可
 
