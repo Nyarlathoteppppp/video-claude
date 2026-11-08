@@ -27,7 +27,7 @@ case ${1:-} in
       $ENV_PATH/python -c 'import cairo, numpy, scipy, PIL; print(\"ok: cairo\", cairo.cairo_version_string(), \"numpy\", numpy.__version__)'"
     ;;
   push)
-    rsync -a --delete --exclude .git --exclude 'film_out/' --exclude 'manim/scenes/media/' --exclude '__pycache__/' \
+    rsync -a --delete --exclude .git --exclude 'film_out/' --exclude '/ink/bgm/' --exclude 'manim/scenes/media/' --exclude '__pycache__/' \
       --exclude .DS_Store --exclude '.claude/' "$REPO/" "$HOST:$DEST/"
     ;;
   run)

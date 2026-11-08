@@ -48,6 +48,14 @@
 <sub>cairo + Blender · 横版 1:09</sub>
 </td>
 </tr>
+<tr>
+<td colspan="4" align="center" valign="top">
+<img src="ink/cover/cover_3x4.jpg" width="220" alt="《字成精》封面：写满四句诗的宣纸，落款「字成精」和小螃蟹印"><br>
+<b>微电影：字成精</b><br>
+一个 AI 用第一人称讲自己从哪来：人类造了字，字造了它，它开始用字追问自己是谁<br>
+<sub>Blender + Python 逐帧渲染 · 横版 11:20（正片 8:45，后接片尾字幕和彩蛋）· 配乐、音效、旁白都由本地模型生成 · <a href="manim/scenes/film.director.md">导演手册</a> · <a href="ink/copy.md">发布文案</a></sub>
+</td>
+</tr>
 </table>
 
 第三期（算力）暂时搁置，没进仓库。成片也不在仓库里：文件太大，前几期还压进了有版权的配乐、新闻图片和表情包。
@@ -301,7 +309,10 @@ python3 styles_film.py reel                                       # 合成无声
 │   ├── minimal_film.py           80 行逐帧渲染模板
 │   ├── wiki_image.py             维基图片：真实地址 + 授权
 │   ├── pdfpage.swift             PDF 页 → PNG
-│   └── remote_render.sh          在另一台 Mac 上渲染
+│   ├── remote_render.sh          在另一台 Mac 上渲染
+│   ├── ink_slot.sh               渲染机上限制同时跑的重任务数
+│   ├── frame_scan.py             成片逐帧查闪帧，把画面突变和镜头表对齐
+│   └── colab_job.sh              把一个脚本丢到 Colab 免费 GPU 上跑完再取回
 ├── manim/
 │   ├── scenes/
 │   │   ├── ai_history_film.py    第二期渲染器（竖版 / 横版同一份代码）
@@ -317,6 +328,11 @@ python3 styles_film.py reel                                       # 合成无声
 │   │   ├── style_*.py            风格库的 2D 单片
 │   │   ├── styles_blender.py     风格库的 3D 和流体
 │   │   ├── styles_score.py, styles_mix.py  风格库的配乐生成和对拍混音
+│   │   ├── film.director.md      《字成精》导演手册：现行规则、逐章分镜、交付说明
+│   │   ├── film.director.history.md  《字成精》试过和否掉的做法（存档）
+│   │   ├── ink_subs.py           《字成精》字幕和全片时钟，所有镜头的时间都从这里读
+│   │   ├── film_rough.py         《字成精》排片与总装
+│   │   ├── film_*.py, ink*.py    《字成精》各镜头、声音（film_score/sfx/voice/mix）、片尾和封面
 │   │   ├── alphago_mcts.py       第一期 Manim 代码
 │   │   └── style.py              配色、字体、阅读时间
 │   └── sfx/                      音效合成、母带、节拍分析
@@ -332,6 +348,7 @@ python3 styles_film.py reel                                       # 合成无声
 │   └── formulas/                 生成好的公式图
 ├── styles/                       风格库样片的封面和发布文案
 ├── alphago/                      第一期封面源文件、截图、发布文案
+├── ink/                          《字成精》发布文案和封面（成片和渲染产物不在仓库）
 └── docs/                         README 配图和生成脚本
 ```
 
@@ -344,3 +361,4 @@ python3 styles_film.py reel                                       # 合成无声
   - 图片、表情包和配乐不在仓库里，版权归原作者。
   - `openai_math_families.json` 来自 [openai/math](https://github.com/openai/math)，遵循 Apache-2.0。
   - 引用的原话和论文标题都注明了出处。
+  - 《字成精》里的 Claude、Clawd 和 Claude 界面属于 Anthropic。应用的字体和标识在渲染时从本机读取，不在仓库里；系统字体和壁纸属于 Apple。本片是个人作品，不是 Anthropic 出品，也没有得到它的认可。

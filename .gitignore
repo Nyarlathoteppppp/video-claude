@@ -25,3 +25,5 @@ manim/scenes/media/
 # style samples: Blender renders before titling
 docs/img/styles/raw/
 styles/film_out/
+ink/bgm/
+ink/film_out/
