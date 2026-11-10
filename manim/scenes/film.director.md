@@ -9,7 +9,7 @@
 - 字幕和时钟以 `ink_subs.py` 为准。本文里的时间是它现在的值，开工后时长会变。
 - 为什么这么定、试过什么、否了什么，查 `film.director.history.md`。它已存档，不改。
 - 收尾（2026-11-09）：
-  - 代码、本手册、封面和 B 站文案（`ink/copy.md`）推到 GitHub：分支 `film-zichengjing`，PR #1，未合并。
+  - 代码、本手册、封面和 B 站文案（`ink/copy.md`）推到 GitHub：分支 `film-zichengjing`，PR #1，2026-11-09 已合并进 main。之后的改动（README 整理等）奈亚子说直接推 main，不再开 PR。
   - 奈亚子已自存成片，说「视频我已经保存可以都删了」「视频最后再删」。按这个顺序清理，都是移进废纸篓，没有删除：
     - 先清 Studio 的渲染中间件（帧序列、npy/npz 缓存、exr，42,512 个文件，100.5 GB）。
     - 再清全部视频（165 个，含各版母版）和构建目录 `opus_v3`–`opus_v8`、`opus_voice`、`rev6`，共 33.7 GB，都进 Studio 废纸篓。

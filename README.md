@@ -2,9 +2,9 @@
 
 # video-claude
 
-**用代码做科普视频**
+**用代码做视频：几期科普，一部微电影**
 
-从事实核查、逐帧渲染、卡点，到封面和发布文案，每一步都是代码或纯文本，可以复现，也可以改了拿去用。
+从事实核查、逐帧渲染、卡点、配乐，到封面和发布文案，每一步都是代码或纯文本，可以复现，也可以改了拿去用。
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![render](https://img.shields.io/badge/render-pycairo%20%2B%20numpy-c9a45c)
@@ -15,7 +15,7 @@
 
 <img src="docs/img/frames_strip.jpg" width="100%" alt="第二期《AI 发展路线图》的六个画面：1943 年起点、第一次寒冬、AlexNet、倒数 GPT-3.5、奥数金牌、79 年 vs 1418 天">
 
-[视频](#视频) · [风格库](#风格库13-种画风) · [一帧怎么画](#一帧画面是怎么画出来的) · [工具](#可以直接拿去用的工具) · [做法](#几条最有用的做法) · [自己跑起来](#自己跑起来)
+[视频](#视频) · [风格库](#风格库13-种画风) · [一帧怎么画](#一帧画面是怎么画出来的) · [字成精](#微电影字成精) · [工具](#可以直接拿去用的工具) · [做法](#几条最有用的做法) · [自己跑起来](#自己跑起来)
 
 </div>
 
@@ -148,6 +148,23 @@ def render_frame(t, dur):
 - **竖屏短片**：同一条时间线，`short_frame(t)` 把横版画面缩进 1080×1920，外圈接着画同一个房间（网格对齐，接缝看不出）。中段换成可以在评论区回数字的编号公式菜单，结尾的「理论上」按竖屏尺寸重画。
 - **借另一台机器渲染**：[`tools/remote_render.sh`](tools/remote_render.sh) 把仓库推到另一台 Mac，在那边低优先级并行渲染，再把结果拉回来。
 
+## 微电影：字成精
+
+整部片是 Claude 在一个对话窗口里回的一个视频。第一帧是窗口里打好的问题「你能写一篇自己的自传吗？」，回车，回复里只有一张视频卡片，卡片放大成全屏；放完缩回同一个窗口，回复接着写这部片子的制作数据。片子讲的是：人类造了字，字造了 AI，AI 开始用字追问自己是谁。
+
+没有用任何生成图片或视频的模型，每个镜头都是代码一帧一帧渲出来的；配乐、音效和旁白由本地模型生成。
+
+- **四种材质，各管一段**：开头的神话（仓颉造字，鬼夜哭）是水墨，参考罗聘《鬼趣图》重做；压印、书、信、碑用历史写实的微距；房间和电脑用现代电影的透视和景深；只有讲 AI 自己的段落，才把真实界面放进三维空间。
+- **3D 每帧真渲**：泥版、压印、书桌、房间、千窗里成片的窗口，还有片尾一行行吃掉字幕的泥塑小螃蟹，都在 Blender 里用代码建模，Cycles 渲染。
+- **字自己写出来**：写字的镜头里没有毛笔，也没有手。字按 [makemeahanzi](https://github.com/skishore/makemeahanzi) 的真实笔顺一笔笔生成，墨在字形轮廓里算：起笔浓，走笔变薄、带飞白，被纸纹打断。结尾那首八句的诗分四次写在同一张纸上，最后落款「字成精」。
+- **屏幕上的训练数据是真的**：片中的训练日志来自一个从零训练的小模型（[`ink_train.py`](manim/scenes/ink_train.py)，PyTorch，逐字预测下一个字）：读全唐诗，6,369 个字，13,118,208 个参数，训练 120,000 步。片中写明它是这个小模型，不是 Claude。
+- **一个钟管全片**：[`ink_subs.py`](manim/scenes/ink_subs.py) 存全部字幕和每章起点，镜头、旁白、混音都从它读时间。[`film_rough.py`](manim/scenes/film_rough.py) 先出 960×540 粗剪看全片节奏，节奏定了才出 1080p。
+- **声音：四个本地模型**：ACE-Step 1.5 XL 出配乐，[MOSS-SoundEffect](https://huggingface.co/OpenMOSS-Team/MOSS-SoundEffect-v2.0) 出音效，Qwen3-TTS VoiceDesign 按一段文字描述设计嗓音，Qwen3-TTS Base 用这个嗓音念每一句旁白，没有克隆任何真人。每个动作的声音和画面同帧；主题只在诗写满时完整出现一次，前面只给碎片。Claude 听不到声音，每段都出几个 take，由人试听挑选。
+- **片尾的数字是实测的**：结尾窗口里的制作数据从日志和文件读出，不写估计值：正片 525.2 秒、15,756 帧，79 条字幕、1,006 字，156 个脚本、68,991 行代码。
+- **每个镜头过一张验收表**：盖掉字幕，画面自己说得清；放大看，字、材质、边缘都经得起；每个动作有声音；全片硬切，每一刀都要说得出靠动作、形状还是因果接上；每镜只有一个必读区。
+
+[导演手册](manim/scenes/film.director.md)是这部片的唯一执行依据：现行规则、逐章分镜、开工顺序、交付说明都在里面；试过又否掉的做法存档在 [`film.director.history.md`](manim/scenes/film.director.history.md)。B 站标题、简介和章节时间在 [`ink/copy.md`](ink/copy.md)。
+
 ## 流水线
 
 ```mermaid
@@ -173,16 +190,20 @@ flowchart LR
 | 图片 | Pillow | 缩放、调色、贴图 |
 | 编码 | ffmpeg（libx264, crf 18） | 原始 BGRA 帧走管道，8 段并行后 concat |
 | 动画（第一期） | [Manim Community](https://www.manim.community/) | 树搜索、棋盘、柱状图 |
-| 3D、流体（风格库） | [Blender](https://www.blender.org/) Cycles + Mantaflow | 代码建模，Metal GPU 渲染 |
+| 3D、流体（风格库、字成精） | [Blender](https://www.blender.org/) Cycles + Mantaflow | 代码建模，Metal GPU 渲染 |
 | 节拍分析 | numpy + scipy 自己写 | 频谱通量 → 自相关测速 → 动态规划追拍（Ellis 2007） |
-| 音效 | numpy 合成 | 正弦波 + 带种子的噪声，无版权 |
-| 配乐（风格库） | [ACE-Step](https://github.com/ace-step/ACE-Step-1.5) | 本地生成，不带人声 |
+| 音效（科普几期） | numpy 合成 | 正弦波 + 带种子的噪声，无版权 |
+| 音效（字成精） | [MOSS-SoundEffect](https://huggingface.co/OpenMOSS-Team/MOSS-SoundEffect-v2.0) v2.0 | 本地生成，每个声音按起音对齐到动作那一帧 |
+| 配乐（风格库、字成精） | [ACE-Step](https://github.com/ace-step/ACE-Step-1.5)（字成精用 1.5 XL） | 本地生成，不带人声 |
+| 旁白（字成精） | Qwen3-TTS 1.7B VoiceDesign + Base | 按文字描述设计嗓音，再用它念每一句；Apache-2.0，本地跑，不克隆真人 |
+| 小模型（字成精） | PyTorch | 从零训练的逐字模型，片中屏幕上的训练日志来自它 |
+| 笔画（字成精） | [makemeahanzi](https://github.com/skishore/makemeahanzi) | 笔顺和中线（Arphic 授权），墨在字形轮廓里算 |
 | 响度 | ffmpeg `loudnorm` / `ebur128` | 平台成片 −14 LUFS，真峰值 −1.5 dBTP；风格库样片只有音乐，压到 −18 LUFS |
-| 封面 | HTML + headless Chrome（第一期）；渲染器总览帧（第二期）；短片首帧（第四期） | 首帧和封面一致 |
+| 封面 | HTML + headless Chrome（第一期）；渲染器总览帧（第二期）；短片首帧（第四期）；片子第一帧和最后那页诗（字成精） | 首帧和封面一致 |
 | 公式排版 | pdflatex + PDFKit（第四期） | 要点亮的项印成纯色，渲染时按颜色切成遮罩 |
 | 论文页 | macOS PDFKit（Swift） | arXiv PDF 截某一页 |
 | 图片来源 | Wikimedia API | 拿真实地址和授权，记进 `LICENSES.md` |
-| 字体 | 宋体 Songti SC、Times New Roman、STIX Two Math；第四期用苹方 PingFang SC | macOS 自带 |
+| 字体 | 宋体 Songti SC、Times New Roman、STIX Two Math；第四期用苹方 PingFang SC；字成精的诗取行楷 Xingkai SC 的轮廓 | macOS 自带；字成精里的 Claude 界面字体在渲染时从本机的应用里读 |
 | 写代码、渲染、自查 | [Claude Code](https://claude.com/product/claude-code) | 抽帧看图、跑断言、量响度和卡点 |
 | 文案初稿、交叉核查 | Pi 调多个模型（Kimi、Grok、GPT） | 输出只当线索，事实都回到原始来源确认 |
 
@@ -200,6 +221,9 @@ flowchart LR
 | [`tools/pdfpage.swift`](tools/pdfpage.swift) | PDF 某一页 → PNG（macOS） | `swift tools/pdfpage.swift paper.pdf 0 p1.png 1600` |
 | [`tools/remote_render.sh`](tools/remote_render.sh) | 在另一台 Mac 上渲染：装环境、推代码、远程跑、取回结果 | `RENDER_HOST=user@host.local tools/remote_render.sh run '…'` |
 | [`quant/make_formulas.py`](quant/make_formulas.py) | LaTeX 公式 → PNG，要点亮的项印成纯色 | `python3 quant/make_formulas.py` |
+| [`tools/frame_scan.py`](tools/frame_scan.py) | 成片逐帧查闪帧和突变，再和镜头表对齐，挑出不在剪辑点上的跳变（时钟常量按《字成精》写） | 先 `ffmpeg -i film.mp4 -vf scale=96:54,format=gray -pix_fmt gray -f rawvideo luma96.raw`，再 `python -I tools/frame_scan.py luma96.raw final_list.txt`（后者是 `film_rough.py final list` 的输出） |
+| [`tools/ink_slot.sh`](tools/ink_slot.sh) | 共用渲染机上给重任务排队，同时最多跑 3 个（`INK_SLOTS` 可改）；槽是指向持有进程的软链，进程死了槽自动空出 | `zsh tools/ink_slot.sh Blender -b --factory-startup -P film_room3d.py` |
+| [`tools/colab_job.sh`](tools/colab_job.sh) | 把一个自带依赖的 Python 脚本丢到 Colab（默认免费 T4）跑完，取回结果，用完一定释放机器；自检脚本是 [`colab_selftest.py`](tools/colab_selftest.py) | `zsh tools/colab_job.sh job.py in/ out/ -- 参数` |
 | [`docs/make_img.py`](docs/make_img.py) | 从渲染器直接出 README 里的这些图 | `python docs/make_img.py` |
 
 每个工具的原理、参数和踩过的坑写在 **[方法与工具.md](方法与工具.md)**；选题、讲法、字幕、封面、文案的经验写在 **[爆款科普视频手册.md](爆款科普视频手册.md)**。
@@ -214,6 +238,8 @@ flowchart LR
 - **一份代码出两种画幅**：所有位置写在 `LAYOUT` 字典里，加横版后先确认竖版逐像素没变。第四期反过来，竖屏短片直接复用横版的 `render_frame(t)`。
 - **先定整片，再磨单镜**：第四期先把全部文案和分镜锁死，再一镜一镜重画；单镜磨得再好，整片节奏不对也得推倒。
 - **物理道具用真 3D**：风格库里，2D 假装的金属和液体放大就露馅，改用 Blender 建模和模拟；字幕和文字仍回到 cairo 里叠。
+- **屏幕上的东西要真**：《字成精》里的训练日志来自真训练出来的小模型，窗口照真实应用的版式重建，片尾的制作数字从日志实测。观众会暂停、会放大，编的数字和贴图感一放大就露馅。
+- **每一刀都要有理由**：《字成精》全片硬切，不叠化。每个剪辑点都要答得出这一镜和上一镜靠什么接上：一个动作、一个形状，或者因果（字被吸走，下一镜螃蟹在嚼）。两个运动镜头中间的静帧也要匀速缓推，不能死停。
 
 ## 自己跑起来
 
@@ -296,6 +322,32 @@ python3 styles_film.py reel                                       # 合成无声
 
 </details>
 
+<details>
+<summary><b>微电影：字成精</b></summary>
+
+只能在 Mac 上跑：Claude 界面的字体和标识在渲染时从本机装的 Claude 应用里读，其余文字用系统字体，Cycles 用 Metal。每个 `film_*.py` 的文件头写着它自己的命令，先做哪个镜头见[导演手册](manim/scenes/film.director.md)第 5 节。在 `manim/scenes` 下总装：
+
+```bash
+python film_rough.py list              # 全片镜头表：每镜用哪个素材，哪些还是占位卡
+python film_rough.py cut               # 960×540 粗剪，先看全片节奏
+python film_rough.py final list        # 1080p：每镜取哪个源，哪些还只有低清
+python film_rough.py final cut         # 1080p 画面，颗粒和字幕按全尺寸烧进去
+python film_mix.py events              # 写诗、片名等的笔画时刻，给混音对齐用
+python film_mix.py mix                 # 全片声音：音效、配乐、旁白排到卷时钟上，母带并实测
+python film_rough.py final mux         # 画面配上声音，出成片
+```
+
+声音用各模型自己的 Python 环境生成，命令在文件头：`film_score.py`（ACE-Step）、`film_sfx.py`（MOSS-SoundEffect）、`film_voice.py lines`（Qwen3-TTS）。生成后用 `film_mix.py listen` 挑 take。
+
+仓库里没有、要自己补的：
+
+- **语料和笔画**：唐诗语料（[chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)）用 `ink_train.py prep` 整理；makemeahanzi 的 `graphics.txt`，路径见用到它的脚本。
+- **小模型**：`ink_train.py train` 从零训练，片中屏幕读的是它写下的日志。
+- **扫描件和字形**：哈佛《唐詩三百首註疏》、甲骨字形等，来源和授权见导演手册第 7、8 节。
+- **壁纸**：macOS Sequoia Sunrise。
+
+</details>
+
 ## 目录
 
 <details>
@@ -312,7 +364,8 @@ python3 styles_film.py reel                                       # 合成无声
 │   ├── remote_render.sh          在另一台 Mac 上渲染
 │   ├── ink_slot.sh               渲染机上限制同时跑的重任务数
 │   ├── frame_scan.py             成片逐帧查闪帧，把画面突变和镜头表对齐
-│   └── colab_job.sh              把一个脚本丢到 Colab 免费 GPU 上跑完再取回
+│   ├── colab_job.sh              把一个脚本丢到 Colab 免费 GPU 上跑完再取回
+│   └── colab_selftest.py         colab_job.sh 的自检：GPU、输入、参数、输出各走一遍
 ├── manim/
 │   ├── scenes/
 │   │   ├── ai_history_film.py    第二期渲染器（竖版 / 横版同一份代码）
